@@ -1,0 +1,27 @@
+{
+  "name": "מערכת שליטה פרויקטים – עמיסף",
+  "short_name": "עמיסף",
+  "description": "מערכת ניהול פרויקטים – קבוצת עמיסף",
+  "start_url": "/amisaf-dashboard/",
+  "scope": "/amisaf-dashboard/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f1f3d",
+  "theme_color": "#0f1f3d",
+  "lang": "he",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
