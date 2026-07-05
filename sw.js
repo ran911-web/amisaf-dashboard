@@ -1,8 +1,12 @@
 // Amisaf Dashboard Service Worker — v3 (network-first)
 // Strategy: HTML always from network (falls back to cache only when offline).
 // This prevents users from being stuck on stale versions.
-const CACHE_NAME = 'amisaf-v3';
+const CACHE_NAME = 'amisaf-v4';
 const STATIC_ASSETS = ['./icon-192.png', './icon-512.png', './manifest.json'];
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+});
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
