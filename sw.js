@@ -1,7 +1,7 @@
 // Amisaf Dashboard Service Worker — v3 (network-first)
 // Strategy: HTML always from network (falls back to cache only when offline).
 // This prevents users from being stuck on stale versions.
-const CACHE_NAME = 'amisaf-v32';
+const CACHE_NAME = 'amisaf-v33';
 const STATIC_ASSETS = ['./icon-192.png', './icon-512.png', './manifest.json'];
 
 self.addEventListener('message', (event) => {
@@ -35,14 +35,23 @@ self.addEventListener('fetch', (event) => {
   // HTML / navigation: NETWORK FIRST — always try fresh, cache only as offline fallback
   if (req.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname.endsWith('/')) {
     event.respondWith(
-      fetch(req)
+      // `cache: 'reload'` forces a real network round-trip. Without it the
+      // browser's own HTTP cache (GitHub Pages sends max-age=600) satisfies
+      // the request and users stay on yesterday's build for up to 10 minutes.
+      fetch(req, { cache: 'reload' })
         .then(res => {
           const copy = res.clone();
           caches.open(CACHE_NAME).then(c => c.put(req, copy)).catch(() => {});
           return res;
         })
-        .catch(() => caches.match(req))
+        .catch(() => fetch(req).catch(() => caches.match(req)))
     );
+    return;
+  }
+
+  // sw.js itself and the manifest must never be served from cache
+  if (url.pathname.endsWith('sw.js') || url.pathname.endsWith('manifest.json')) {
+    event.respondWith(fetch(req, { cache: 'reload' }).catch(() => caches.match(req)));
     return;
   }
 
