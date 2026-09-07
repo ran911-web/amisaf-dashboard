@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1F3864">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://hjlgkhfrovtpmyeczzze.supabase.co; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'; form-action 'none'">
+<title>פורטל דיירים · עמיסף</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAF9F6; --ink:#1A1F2E; --navy:#1F3864; --navy-soft:#E8EDF7;
+  --line:#DDD9D0; --muted:#6B7080; --signed:#15803D; --signed-soft:#E4F4E8;
+  --open:#C2410C; --open-soft:#FBE9DF; --tap:56px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--paper)}
+body{font-family:Heebo,system-ui,sans-serif;color:var(--ink);background:var(--paper);min-height:100dvh;line-height:1.5;-webkit-tap-highlight-color:transparent}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+:focus-visible{outline:3px solid var(--navy);outline-offset:2px}
+
+/* ── header ── */
+.hdr{background:var(--navy);color:#fff;padding:env(safe-area-inset-top,0) 0 0}
+.hdr-in{max-width:680px;margin:0 auto;padding:18px 20px 16px}
+.hdr .who{font-size:13px;opacity:.75}
+.hdr .name{font-size:22px;font-weight:800;line-height:1.25;margin-top:2px}
+.hdr .addr{font-size:14px;opacity:.85;margin-top:2px}
+
+/* ── majority meter: the hero ── */
+.meter{max-width:680px;margin:-14px auto 0;padding:0 16px;position:relative}
+.meter-card{background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:18px 20px}
+.meter-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.meter-big{font-size:38px;font-weight:800;line-height:1;letter-spacing:-.5px}
+.meter-big small{font-size:16px;font-weight:600;color:var(--muted);margin-right:4px}
+.meter-need{font-size:14px;color:var(--muted);text-align:left}
+.meter-need b{color:var(--ink);font-size:18px;display:block}
+.bar{height:14px;background:#EFECE5;border-radius:99px;margin-top:12px;overflow:hidden;position:relative}
+.bar-fill{height:100%;background:var(--signed);border-radius:99px;transition:width .4s ease}
+.bar-goal{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--navy);right:33.333%}
+.bar-goal::after{content:'⅔';position:absolute;top:-19px;right:-8px;font-size:11px;font-weight:700;color:var(--navy)}
+.meter-sub{display:flex;gap:16px;margin-top:10px;font-size:13px;color:var(--muted)}
+.meter-sub b{color:var(--ink)}
+.meter.reached .meter-card{border-color:var(--signed);background:var(--signed-soft)}
+.meter.reached .meter-big{color:var(--signed)}
+
+/* ── list ── */
+.list{max-width:680px;margin:18px auto 0;padding:0 16px 100px}
+.tools{display:flex;gap:8px;margin-bottom:12px}
+.tools input{flex:1;height:48px;border:1.5px solid var(--line);border-radius:12px;padding:0 14px;background:#fff;font-size:16px}
+.tools .chip{height:48px;padding:0 14px;border-radius:12px;border:1.5px solid var(--line);background:#fff;font-size:14px;font-weight:600;color:var(--muted);white-space:nowrap}
+.tools .chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+.bldg{font-size:13px;font-weight:700;color:var(--muted);margin:18px 4px 8px}
+.apt{background:#fff;border:1.5px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.apt.done{border-color:var(--signed)}
+.apt.part{border-color:var(--open)}
+.apt-h{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;gap:10px;background:#FBFAF7;border-bottom:1px solid var(--line)}
+.apt-h .num{font-size:17px;font-weight:800}
+.apt-h .meta{font-size:13px;color:var(--muted)}
+.apt-h .tag{font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px;white-space:nowrap}
+.tag.done{background:var(--signed-soft);color:var(--signed)}
+.tag.part{background:var(--open-soft);color:var(--open)}
+.tag.open{background:#F1EFE9;color:var(--muted)}
+
+.own{display:flex;align-items:center;gap:12px;padding:12px 16px;min-height:var(--tap);border-top:1px solid #F0EDE6}
+.own:first-of-type{border-top:0}
+.own-main{flex:1;min-width:0}
+.own-name{font-size:16px;font-weight:700;line-height:1.3}
+.own-sub{font-size:13px;color:var(--muted);margin-top:2px}
+.own-sub .blk{color:var(--open);font-weight:600}
+
+/* the signature toggle — big enough for a thumb */
+.sig{flex-shrink:0;width:var(--tap);height:var(--tap);border-radius:14px;border:2px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;color:#C8C4BA;transition:background .15s,border-color .15s,color .15s}
+.sig.on{background:var(--signed);border-color:var(--signed);color:#fff}
+.sig:active{transform:scale(.94)}
+.sig[disabled]{opacity:.5}
+
+.own-actions{display:flex;gap:6px;flex-shrink:0}
+.icon-btn{width:44px;height:44px;border-radius:11px;border:1.5px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;font-size:18px}
+.icon-btn.has{border-color:var(--navy);background:var(--navy-soft)}
+.own-note{margin:0 16px 12px;padding:10px 12px;background:#FFF8E6;border-radius:10px;font-size:14px;color:#6B4E00;white-space:pre-wrap}
+
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty b{display:block;font-size:18px;color:var(--ink);margin-bottom:6px}
+
+/* ── sheet (edit) ── */
+.sheet-bg{position:fixed;inset:0;background:rgba(26,31,46,.5);display:none;align-items:flex-end;z-index:50}
+.sheet-bg.open{display:flex}
+.sheet{background:#fff;width:100%;max-width:680px;margin:0 auto;border-radius:20px 20px 0 0;max-height:92dvh;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0)}
+.sheet-h{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;border-radius:20px 20px 0 0}
+.sheet-h b{font-size:18px}
+.sheet-h .x{width:40px;height:40px;border-radius:10px;font-size:24px;color:var(--muted)}
+.sheet-b{padding:16px 20px;overflow-y:auto;flex:1}
+.f{margin-bottom:14px}
+.f label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.f input,.f textarea{width:100%;height:50px;border:1.5px solid var(--line);border-radius:12px;padding:0 14px;font-size:16px;background:#fff}
+.f textarea{height:auto;min-height:90px;padding:12px 14px;resize:vertical;line-height:1.5}
+.f input[type=tel],.f input[type=email]{direction:ltr;text-align:right}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sheet-f{padding:12px 20px;border-top:1px solid var(--line);display:flex;gap:10px;background:#fff}
+.btn{height:52px;border-radius:13px;font-size:16px;font-weight:700;padding:0 20px;flex:1}
+.btn.pri{background:var(--navy);color:#fff}
+.btn.sec{background:#fff;border:1.5px solid var(--line)}
+.btn[disabled]{opacity:.6}
+
+.calls{margin-top:8px}
+.call{padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;font-size:14px}
+.call .d{font-size:12px;color:var(--muted);font-weight:600}
+.call-add{background:var(--navy-soft);border-radius:12px;padding:12px}
+
+.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0));left:16px;right:16px;max-width:400px;margin:0 auto;background:var(--ink);color:#fff;padding:14px 18px;border-radius:12px;font-size:15px;font-weight:600;text-align:center;z-index:60;transform:translateY(120%);transition:transform .25s}
+.toast.show{transform:none}
+.toast.err{background:#9F1D1D}
+
+.gate{max-width:420px;margin:12vh auto;padding:0 20px;text-align:center}
+.gate .logo{font-size:26px;font-weight:800;color:var(--navy)}
+.gate p{color:var(--muted);margin-top:8px}
+.gate .box{margin-top:26px;background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:24px 20px;text-align:right}
+.spin{width:22px;height:22px;border:3px solid var(--line);border-top-color:var(--navy);border-radius:50%;animation:s 1s linear infinite;margin:0 auto}
+@keyframes s{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+
+<div class="sheet-bg" id="sheetBg">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div class="sheet-h"><b id="shTitle">עריכת דייר</b><button class="x" onclick="closeSheet()" aria-label="סגור">×</button></div>
+    <div class="sheet-b" id="shBody"></div>
+    <div class="sheet-f"><button class="btn sec" onclick="closeSheet()">ביטול</button><button class="btn pri" id="shSave" onclick="saveSheet()">שמירה</button></div>
+  </div>
+</div>
+
+<script>
+const SUPA = 'https://hjlgkhfrovtpmyeczzze.supabase.co';
+const KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqbGdraGZyb3Z0cG15ZWN6enplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzMjc1NDksImV4cCI6MjA5MDkwMzU0OX0.a10Q7iCkPRoK_CSmdlpnfuCcz9nlCNgdeJWvOPyDohk';
+const token = new URLSearchParams(location.search).get('t') || '';
+let data = null, filter = 'all', q = '', editing = null;
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const frac = s => { const m = String(s||'').match(/(\d+)\s*\/\s*(\d+)/); return m && +m[2] ? +m[1]/+m[2] : 0; };
+const today = () => { const p = new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Jerusalem',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()); const g=t=>p.find(x=>x.type===t).value; return `${g('year')}-${g('month')}-${g('day')}`; };
+const heDate = iso => iso ? new Date(iso+'T00:00:00').toLocaleDateString('he-IL') : '';
+
+async function rpc(fn, body) {
+  const r = await fetch(`${SUPA}/rest/v1/rpc/${fn}`, { method:'POST',
+    headers:{ apikey:KEY, Authorization:'Bearer '+KEY, 'Content-Type':'application/json' },
+    body: JSON.stringify(body) });
+  const j = await r.json().catch(()=>null);
+  if (!r.ok) throw new Error((j && j.message) || ('HTTP ' + r.status));
+  return j;
+}
+
+let toastT;
+function toast(msg, err) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show' + (err ? ' err' : '');
+  clearTimeout(toastT); toastT = setTimeout(()=> t.className='toast', 2600);
+}
+
+// ── majority: an apartment counts only when every owner signed ──
+function majority(tenants) {
+  const byApt = new Map();
+  tenants.forEach(t => { const k = (t.building||'')+'|'+(t.subParcel||t.id); (byApt.get(k)||byApt.set(k,[]).get(k)).push(t); });
+  let apts=0, done=0, shareAll=0, shareDone=0, partial=0;
+  byApt.forEach(o => {
+    apts++;
+    const all = o.every(x=>x.signed), some = o.some(x=>x.signed);
+    const sh = Math.max(...o.map(x=>frac(x.commonShare)),0);
+    shareAll += sh; if (all) { done++; shareDone += sh; } else if (some) partial++;
+  });
+  const need = Math.ceil(apts*2/3);
+  return { apts, done, need, partial, gap: Math.max(0,need-done), reached: apts>0 && done>=need,
+           pct: apts ? Math.round(done/apts*100) : 0,
+           sharePct: shareAll ? Math.round(shareDone/shareAll*100) : 0,
+           owners: tenants.length, ownersSigned: tenants.filter(t=>t.signed).length };
+}
+
+function render() {
+  const app = document.getElementById('app');
+  if (!data) return;
+  const m = majority(data.tenants);
+  const qn = q.trim().toLowerCase();
+  let list = data.tenants.filter(t => filter==='all' || (filter==='open' && !t.signed) || (filter==='done' && t.signed));
+  if (qn) list = list.filter(t => [t.name,t.realName,t.subParcel,t.phone,t.idNumber,t.building].join(' ').toLowerCase().includes(qn));
+
+  // group building → apartment
+  const bld = new Map();
+  list.forEach(t => { const b=t.building||''; if(!bld.has(b)) bld.set(b,new Map()); const g=bld.get(b); const k=t.subParcel||'—'; (g.get(k)||g.set(k,[]).get(k)).push(t); });
+
+  app.innerHTML = `
+    <header class="hdr"><div class="hdr-in">
+      <div class="who">${esc(data.contactRole)} · ${esc(data.contactName)}</div>
+      <div class="name">${esc(data.projectName)}</div>
+      ${data.addr ? `<div class="addr">${esc(data.addr)}</div>` : ''}
+    </div></header>
+
+    <section class="meter ${m.reached?'reached':''}"><div class="meter-card">
+      <div class="meter-row">
+        <div class="meter-big">${m.done}<small>מתוך ${m.apts} דירות חתמו</small></div>
+        <div class="meter-need">${m.reached ? '<b>הושג רוב ✓</b>' : `<b>חסרות ${m.gap}</b>לרוב של ⅔`}</div>
+      </div>
+      <div class="bar"><div class="bar-fill" style="width:${m.pct}%"></div><div class="bar-goal"></div></div>
+      <div class="meter-sub">
+        <span>בעלים: <b>${m.ownersSigned}/${m.owners}</b></span>
+        <span>רכוש משותף: <b>${m.sharePct}%</b></span>
+        ${m.partial ? `<span style="color:var(--open)">חלקי: <b>${m.partial}</b></span>` : ''}
+      </div>
+    </div></section>
+
+    <main class="list">
+      <div class="tools">
+        <input type="search" placeholder="חיפוש שם, דירה, טלפון" value="${esc(q)}" oninput="q=this.value;render()" aria-label="חיפוש">
+        <button class="chip ${filter==='open'?'on':''}" onclick="filter=filter==='open'?'all':'open';render()">טרם חתמו</button>
+      </div>
+      ${list.length ? [...bld.entries()].map(([b, apts]) => `
+        ${bld.size>1 || b ? `<div class="bldg">${esc(b || 'ללא שיוך למבנה')}</div>` : ''}
+        ${[...apts.entries()].sort((a,b)=>(parseInt(a[0])||9e9)-(parseInt(b[0])||9e9)).map(([k, owners]) => {
+          const all = owners.every(o=>o.signed), some = owners.some(o=>o.signed);
+          const st = all?'done':some?'part':'open';
+          const sh = frac(owners[0].commonShare);
+          return `<article class="apt ${st}">
+            <div class="apt-h">
+              <div><span class="num">דירה ${esc(k)}</span> <span class="meta">· ${owners.length===1?'בעלים אחד':owners.length+' בעלים'}${sh?` · ${(sh*100).toFixed(1)}% רכוש משותף`:''}${owners[0].floor?` · קומה ${esc(owners[0].floor)}`:''}</span></div>
+              <span class="tag ${st}">${all?'חתומה':some?'חלקית':'טרם'}</span>
+            </div>
+            ${owners.map(t => `
+              <div class="own">
+                <button class="sig ${t.signed?'on':''}" onclick="toggleSigned('${t.id}')" aria-label="${t.signed?'בטל חתימה':'סמן כחתם'}" aria-pressed="${!!t.signed}">${t.signed?'✓':''}</button>
+                <div class="own-main">
+                  <div class="own-name">${esc(t.realName || t.name)}</div>
+                  ${t.realName ? `<div class="own-sub" style="margin-top:0">בנסח: ${esc(t.name)}</div>` : ''}
+                  <div class="own-sub">${t.ownershipShare?`חלק ${esc(t.ownershipShare)}`:''}${t.signedDate?` · חתם ${heDate(t.signedDate)}`:''}${t.phone?` · ${esc(t.phone)}`:''}
+                    ${Object.keys(t.blockers||{}).filter(k=>t.blockers[k]).length?`<span class="blk"> · ${blockerNames(t.blockers)}</span>`:''}</div>
+                </div>
+                <div class="own-actions">
+                  ${t.phone?`<a class="icon-btn" href="tel:${esc(t.phone)}" aria-label="חיוג">📞</a>`:''}
+                  <button class="icon-btn ${(t.calls||[]).length||t.note?'has':''}" onclick="openSheet('${t.id}')" aria-label="עריכה">✎</button>
+                </div>
+              </div>
+              ${t.note?`<div class="own-note">${esc(t.note)}</div>`:''}
+            `).join('')}
+          </article>`;
+        }).join('')}
+      `).join('') : `<div class="empty"><b>${qn||filter!=='all'?'אין תוצאות':'אין דיירים בפרויקט'}</b>${qn||filter!=='all'?'נסה חיפוש אחר':''}</div>`}
+    </main>`;
+}
+
+const BLK = { mortgage:'משכנתא', lien:'עיקול', warning:'הערת אזהרה', estate:'עיזבון', guardian:'אפוטרופסות', protected:'דייר מוגן' };
+const blockerNames = b => Object.keys(b||{}).filter(k=>b[k]&&BLK[k]).map(k=>BLK[k]).join(', ');
+
+async function toggleSigned(id) {
+  const t = data.tenants.find(x=>x.id===id); if (!t) return;
+  const next = !t.signed;
+  if (!next && !confirm(`לבטל את סימון החתימה של ${t.name}?`)) return;
+  const prev = { signed:t.signed, signedDate:t.signedDate };
+  t.signed = next; t.signedDate = next ? today() : ''; render();
+  try {
+    const r = await rpc('portal_update_tenant', { p_token:token, p_tenant_id:id, p_patch:{ signed:next, signedDate:t.signedDate } });
+    Object.assign(t, r.tenant); render();
+    toast(next ? `${t.name} סומן כחתם ✓` : 'הסימון בוטל');
+  } catch(e) { Object.assign(t, prev); render(); toast('השמירה נכשלה — ' + e.message, true); }
+}
+
+function openSheet(id) {
+  const t = data.tenants.find(x=>x.id===id); if (!t) return;
+  editing = id;
+  document.getElementById('shTitle').textContent = t.name;
+  const calls = [...(t.calls||[])].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  document.getElementById('shBody').innerHTML = `
+    <div class="f-row">
+      <div class="f"><label>טלפון</label><input type="tel" id="fPhone" value="${esc(t.phone)}" placeholder="050-0000000"></div>
+      <div class="f"><label>מייל</label><input type="email" id="fEmail" value="${esc(t.email)}"></div>
+    </div>
+    <div class="f"><label>כתובת למשלוח</label><input id="fMail" value="${esc(t.mailAddress)}"></div>
+    <div class="f"><label>עו"ד מייצג</label><input id="fLawyer" value="${esc(t.lawyer)}"></div>
+    <div class="f"><label>הערה</label><textarea id="fNote">${esc(t.note)}</textarea></div>
+    <div class="f"><label>שיחות (${calls.length})</label>
+      <div class="call-add">
+        <div class="f-row" style="margin-bottom:8px">
+          <input type="date" id="cDate" value="${today()}" style="height:44px;border:1.5px solid var(--line);border-radius:10px;padding:0 10px;background:#fff">
+          <input id="cBy" value="${esc(data.contactName)}" placeholder="מי דיבר" style="height:44px;border:1.5px solid var(--line);border-radius:10px;padding:0 10px;background:#fff">
+        </div>
+        <textarea id="cSum" placeholder="מה סוכם בשיחה" style="min-height:64px;margin-bottom:8px"></textarea>
+        <button class="btn pri" style="height:44px;width:100%" onclick="addCall()">הוסף שיחה</button>
+      </div>
+      <div class="calls" id="callList">${calls.map(c=>`<div class="call"><div class="d">${heDate(c.date)}${c.by?` · ${esc(c.by)}`:''}</div>${esc(c.summary)}</div>`).join('')}</div>
+    </div>`;
+  document.getElementById('sheetBg').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeSheet(){ document.getElementById('sheetBg').classList.remove('open'); document.body.style.overflow=''; editing=null; }
+
+async function saveSheet() {
+  const t = data.tenants.find(x=>x.id===editing); if (!t) return;
+  const patch = { phone: v('fPhone'), email: v('fEmail'), mailAddress: v('fMail'), lawyer: v('fLawyer'), note: v('fNote') };
+  const btn = document.getElementById('shSave'); btn.disabled = true; btn.textContent = 'שומר…';
+  try {
+    const r = await rpc('portal_update_tenant', { p_token:token, p_tenant_id:editing, p_patch:patch });
+    Object.assign(t, r.tenant); closeSheet(); render(); toast('נשמר ✓');
+  } catch(e) { toast('השמירה נכשלה — ' + e.message, true); }
+  btn.disabled = false; btn.textContent = 'שמירה';
+}
+const v = id => (document.getElementById(id)?.value || '').trim();
+
+async function addCall() {
+  const t = data.tenants.find(x=>x.id===editing); if (!t) return;
+  const date = v('cDate'), by = v('cBy'), summary = v('cSum');
+  if (!summary) { toast('כתוב מה סוכם בשיחה', true); return; }
+  const calls = [...(t.calls||[]), { date, by, summary, loggedAt: today() }];
+  try {
+    const r = await rpc('portal_update_tenant', { p_token:token, p_tenant_id:editing, p_patch:{ calls } });
+    Object.assign(t, r.tenant); toast('השיחה נשמרה ✓');
+    document.getElementById('cSum').value = '';
+    const sorted = [...t.calls].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    document.getElementById('callList').innerHTML = sorted.map(c=>`<div class="call"><div class="d">${heDate(c.date)}${c.by?` · ${esc(c.by)}`:''}</div>${esc(c.summary)}</div>`).join('');
+    render();
+  } catch(e) { toast('השמירה נכשלה — ' + e.message, true); }
+}
+
+document.getElementById('sheetBg').addEventListener('click', e => { if (e.target.id==='sheetBg') closeSheet(); });
+document.addEventListener('keydown', e => { if (e.key==='Escape') closeSheet(); });
+
+async function boot() {
+  const app = document.getElementById('app');
+  const gate = (title, sub) => `<div class="gate"><div class="logo">קבוצת עמיסף</div><p>פורטל דיירים</p><div class="box"><b style="font-size:17px">${title}</b><p style="margin-top:6px">${sub}</p></div></div>`;
+  if (!token) { app.innerHTML = gate('חסר קישור גישה', 'פתח את הקישור האישי שנשלח אליך. אם אין לך קישור, פנה לאיש הקשר בעמיסף.'); return; }
+  app.innerHTML = `<div class="gate"><div class="logo">קבוצת עמיסף</div><p>טוען את הפרויקט…</p><div class="spin" style="margin-top:26px"></div></div>`;
+  try {
+    data = await rpc('portal_get_project', { p_token: token });
+    data.tenants = (data.tenants||[]).map(t => ({ ...t, signed: t.signed === true }));
+    render();
+  } catch(e) {
+    const msg = { invalid_token:'הקישור אינו תקין', revoked:'הגישה בוטלה', expired:'תוקף הקישור פג', project_not_found:'הפרויקט לא נמצא' }[e.message] || 'לא ניתן לטעון';
+    app.innerHTML = gate(msg, 'פנה לאיש הקשר בעמיסף לקבלת קישור מעודכן.');
+  }
+}
+boot();
+</script>
+</body>
+</html>
