@@ -2,6 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1F3864">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://hjlgkhfrovtpmyeczzze.supabase.co; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'; form-action 'none'">
@@ -148,9 +149,12 @@ const today = () => { const p = new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/
 const heDate = iso => iso ? new Date(iso+'T00:00:00').toLocaleDateString('he-IL') : '';
 
 async function rpc(fn, body) {
-  const r = await fetch(`${SUPA}/rest/v1/rpc/${fn}`, { method:'POST',
-    headers:{ apikey:KEY, Authorization:'Bearer '+KEY, 'Content-Type':'application/json' },
-    body: JSON.stringify(body) });
+  let r;
+  try {
+    r = await fetch(`${SUPA}/rest/v1/rpc/${fn}`, { method:'POST',
+      headers:{ apikey:KEY, Authorization:'Bearer '+KEY, 'Content-Type':'application/json' },
+      body: JSON.stringify(body) });
+  } catch (e) { throw new Error('אין חיבור לאינטרנט — נסה שוב'); }
   const j = await r.json().catch(()=>null);
   if (!r.ok) throw new Error((j && j.message) || ('HTTP ' + r.status));
   return j;
@@ -261,10 +265,23 @@ async function toggleSigned(id) {
   const prev = { signed:t.signed, signedDate:t.signedDate };
   t.signed = next; t.signedDate = next ? today() : ''; render();
   try {
-    const r = await rpc('portal_update_tenant', { p_token:token, p_tenant_id:id, p_patch:{ signed:next, signedDate:t.signedDate } });
+    const r = await rpc('portal_update_tenant', { p_token:token, p_tenant_id:id, p_patch:{ signed:next, signedDate:t.signedDate }, p_expect:{ signed: !!prev.signed } });
     Object.assign(t, r.tenant); render();
     toast(next ? `${t.name} סומן כחתם ✓` : 'הסימון בוטל');
-  } catch(e) { Object.assign(t, prev); render(); toast('השמירה נכשלה — ' + e.message, true); }
+  } catch(e) { Object.assign(t, prev); render(); if (!(await handleStale(e))) toast('השמירה נכשלה — ' + e.message, true); }
+}
+
+// Someone in the office changed this tenant after the page loaded. The server refused
+// to overwrite it — reload the fresh data and let the user look again.
+async function handleStale(e) {
+  if (!e || e.message !== 'stale_data') return false;
+  try {
+    const fresh = await rpc('portal_get_project', { p_token: token });
+    data = fresh; render();
+    if (editing && document.getElementById('sheetBg')?.classList.contains('open')) openSheet(editing);
+  } catch (_) {}
+  toast('הפרטים של הדייר עודכנו במשרד בינתיים — נטענו מחדש. בדוק ונסה שוב', true);
+  return true;
 }
 
 function openSheet(id) {
@@ -298,12 +315,18 @@ function closeSheet(){ document.getElementById('sheetBg').classList.remove('open
 
 async function saveSheet() {
   const t = data.tenants.find(x=>x.id===editing); if (!t) return;
-  const patch = { phone: v('fPhone'), email: v('fEmail'), mailAddress: v('fMail'), lawyer: v('fLawyer'), note: v('fNote') };
+  const form = { phone: v('fPhone'), email: v('fEmail'), mailAddress: v('fMail'), lawyer: v('fLawyer'), note: v('fNote') };
+  // send only what the user actually changed, together with the value they started from
+  const patch = {}, expect = {};
+  for (const k of Object.keys(form)) {
+    if ((form[k] || '') !== (t[k] || '')) { patch[k] = form[k]; expect[k] = t[k] || ''; }
+  }
+  if (!Object.keys(patch).length) { closeSheet(); return; }
   const btn = document.getElementById('shSave'); btn.disabled = true; btn.textContent = 'שומר…';
   try {
-    const r = await rpc('portal_update_tenant', { p_token:token, p_tenant_id:editing, p_patch:patch });
+    const r = await rpc('portal_update_tenant', { p_token:token, p_tenant_id:editing, p_patch:patch, p_expect:expect });
     Object.assign(t, r.tenant); closeSheet(); render(); toast('נשמר ✓');
-  } catch(e) { toast('השמירה נכשלה — ' + e.message, true); }
+  } catch(e) { if (!(await handleStale(e))) toast('השמירה נכשלה — ' + e.message, true); }
   btn.disabled = false; btn.textContent = 'שמירה';
 }
 const v = id => (document.getElementById(id)?.value || '').trim();
@@ -312,9 +335,9 @@ async function addCall() {
   const t = data.tenants.find(x=>x.id===editing); if (!t) return;
   const date = v('cDate'), by = v('cBy'), summary = v('cSum');
   if (!summary) { toast('כתוב מה סוכם בשיחה', true); return; }
-  const calls = [...(t.calls||[]), { date, by, summary, loggedAt: today() }];
   try {
-    const r = await rpc('portal_update_tenant', { p_token:token, p_tenant_id:editing, p_patch:{ calls } });
+    // append-only on the server: a call logged in the office meanwhile can't be erased
+    const r = await rpc('portal_update_tenant', { p_token:token, p_tenant_id:editing, p_patch:{ appendCall: { date, by, summary } } });
     Object.assign(t, r.tenant); toast('השיחה נשמרה ✓');
     document.getElementById('cSum').value = '';
     const sorted = [...t.calls].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
