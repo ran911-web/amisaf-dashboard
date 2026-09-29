@@ -4496,6 +4496,26 @@ function renderTabuReview() {
 // project by re-reading the CURRENT server state. Returns true/false, or
 // null if the check itself could not be completed — callers must never
 // delete a file on a null (ambiguous) result.
+// true = referenced on the server, false = definitely not, null = couldn't find out
+async function verifyFileLinked(projectId, path, field) {
+  try {
+    const res = await fetch(PROJ_URL + '?select=data&order=updated_at.desc&limit=1', { headers: PROJ_HEADERS });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    if (!Array.isArray(rows) || !rows.length) return null;
+    const proj = (rows[0].data || []).find(p => p && p.projectId === projectId);
+    if (!proj) return null;
+    const list = Array.isArray(proj[field]) ? proj[field] : [];
+    return list.some(f => f && f.path === path);
+  } catch(e) { return null; }
+}
+async function _deleteStoredFile(path) {
+  try {
+    const r = await fetch(`${STORAGE_URL}/object/company-docs/${encodeURIComponent(path)}`, { method: 'DELETE', headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY } });
+    return r.ok || r.status === 404;
+  } catch (e) { return false; }
+}
+
 async function verifyTabuFileLinked(projectId, path) {
   try {
     const res = await fetch(PROJ_URL + '?select=data&order=updated_at.desc&limit=1', { headers: PROJ_HEADERS });
@@ -4598,6 +4618,9 @@ async function saveTabuTenants() {
   // 2) Only now upload the PDF, then attach its record in a second, independent save.
   //    If either step fails the tenants are already safe; we just report the file.
   let storedPath = '';
+  // Stage-2 problems are reported in the FINAL message. A separate error toast here
+  // was immediately replaced by the green "added ✓" toast, hiding the partial state.
+  let fileErr = '';
   if (tabuFileRef) {
     try {
       const safe = `tabu_${tenantsProjIdx}_${Date.now()}.pdf`;
@@ -4608,10 +4631,17 @@ async function saveTabuTenants() {
       });
       if (up.ok) {
         const filesBefore = JSON.parse(JSON.stringify(p.tabuFiles || []));
-        p.tabuFiles.push({ name: tabuFileRef.name, path: safe, building, batchId,
-                           gush: tabuDraft.gush, helka: tabuDraft.helka,
-                           uploadedAt: getTodayISO(), uploadedBy: currentUsername || '' });
-        const res2 = await saveProjectsToCloudEx();
+        // The first save replaced `projects` with a fresh copy, so `p` is no longer the live
+        // object. Build the second candidate from the CURRENT confirmed state, located by
+        // projectId, so the file record really is in what gets sent.
+        const cand2 = JSON.parse(JSON.stringify(projects));
+        const cp2 = cand2.find(x => x.projectId === p.projectId);
+        if (!cp2) throw new Error('project_vanished');
+        if (!Array.isArray(cp2.tabuFiles)) cp2.tabuFiles = [];
+        cp2.tabuFiles.push({ name: tabuFileRef.name, path: safe, building, batchId,
+                             gush: tabuDraft.gush, helka: tabuDraft.helka,
+                             uploadedAt: getTodayISO(), uploadedBy: currentUsername || '' });
+        const res2 = await saveProjectsToCloudEx({ data: cand2 });
 
         if (res2.status === 'success') {
           storedPath = safe;
@@ -4621,7 +4651,7 @@ async function saveTabuTenants() {
           // it was never even sent. Neither is ambiguous — safe to delete.
           if (res2.status !== 'conflict') p.tabuFiles = filesBefore;
           try { await fetch(`${STORAGE_URL}/object/company-docs/${encodeURIComponent(safe)}`, { method:'DELETE', headers:{ 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY } }); } catch(e) {}
-          showToast('הדיירים נשמרו, אך רישום קובץ הנסח נכשל — ניתן להעלות שוב', 'error');
+          fileErr = 'רישום קובץ הנסח נכשל — ניתן להעלות שוב';
         } else {
           // §4: 'error' is AMBIGUOUS — a network/timeout failure or lost
           // response does NOT prove the server never processed the request.
@@ -4634,27 +4664,33 @@ async function saveTabuTenants() {
             const reloaded = await loadProjectsFromCloud();
             if (reloaded) await loadNegotiationsFromCloud();   // re-open the negotiations gate
             if (reloaded) { storedPath = safe; showToast('קובץ הנסח נשמר בפועל (התשובה אבדה) — הנתונים עודכנו'); }
-            else showToast('קובץ הנסח כנראה נשמר, אך לא ניתן היה לרענן את הנתונים — רענן ידנית', 'error');
+            else fileErr = 'קובץ הנסח כנראה נשמר, אך לא ניתן היה לרענן את הנתונים — רענן ידנית';
           } else if (linked === false) {
             try { await fetch(`${STORAGE_URL}/object/company-docs/${encodeURIComponent(safe)}`, { method:'DELETE', headers:{ 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY } }); } catch(e) {}
-            showToast('הדיירים נשמרו, אך רישום קובץ הנסח נכשל — ניתן להעלות שוב', 'error');
+            fileErr = 'רישום קובץ הנסח נכשל — ניתן להעלות שוב';
           } else {
             // Verification itself failed — leave the file untouched. Never
             // delete on a guess; an orphaned file is far cheaper than a
             // silently broken link to real, saved data.
-            showToast('לא ניתן לאמת אם קובץ הנסח נשמר. הקובץ לא נמחק — בדוק ידנית בלשונית הדיירים או נסה שוב מאוחר יותר', 'error');
+            fileErr = 'לא ניתן לאמת אם קובץ הנסח נשמר. הקובץ לא נמחק — בדוק ידנית בלשונית הדיירים או נסה שוב מאוחר יותר';
           }
         }
       } else {
-        showToast('הדיירים נשמרו, אך העלאת קובץ הנסח נכשלה (' + up.status + ')', 'error');
+        fileErr = 'העלאת קובץ הנסח נכשלה (' + up.status + ')';
       }
-    } catch(e) { console.warn('tabu file store failed', e); showToast('הדיירים נשמרו, אך העלאת הקובץ נכשלה', 'error'); }
+    } catch(e) { console.warn('tabu file store failed', e); fileErr = 'העלאת הקובץ נכשלה'; }
   }
   logActivity(p.name, 'add', 'דיירים', `${fresh.length} בעלים`,
     `יובאו מנסח טאבו · גוש ${tabuDraft.gush || '—'} חלקה ${tabuDraft.helka || '—'}${building?` · ${building}`:''}`);
   closeTabuModal();
   renderTenants();
-  showToast(`${fresh.length} בעלים נוספו${additions.length - fresh.length ? ` · ${additions.length - fresh.length} כבר היו רשומים` : ''}${storedPath ? ' · הנסח נשמר' : ''} ✓`);
+  const _dupNote = additions.length - fresh.length ? ` · ${additions.length - fresh.length} כבר היו רשומים` : '';
+  if (tabuFileRef && !storedPath) {
+    // Partial result: tenants are saved, the PDF record is not (or unknown). Say exactly that.
+    showToast(`${fresh.length} בעלים נשמרו${_dupNote}. ${fileErr || 'קובץ הנסח לא נשמר'}`, 'error', true);
+  } else {
+    showToast(`${fresh.length} בעלים נוספו${_dupNote}${storedPath ? ' · הנסח נשמר' : ''} ✓`);
+  }
 }
 
 // ── Tenant add/edit modal ──
@@ -5940,7 +5976,10 @@ function buildProjectRow(p) {
       <span class="pct-num ${pctColor(pct)}">${pct}%</span>
       <div class="pct-bar"><div class="pct-bar-fill" style="width:${pct}%;background:${pctBarColor(pct)}"></div></div>
     </div></td>
-    <td style="font-size:11px;color:var(--text-2);white-space:nowrap;text-align:center">${escH(p.target)}</td>
+    <td style="font-size:11px;color:var(--text-2);white-space:nowrap;text-align:center">${
+      (p.target && !/^\s*(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{4}-\d{2}-\d{2}|\d{1,2}[\/.\-]\d{4}|Q[1-4]\s*\d{4}|רבעון.*)\s*$/i.test(String(p.target)))
+        ? `<span style="color:#b45309" title="ערך לא תקין — צפוי תאריך. ניתן לתקן בעריכה">⚠ ${escH(p.target)}</span>`
+        : escH(p.target)}</td>
     <td><span class="badge ${sc.cls}">${sc.icon} ${p.status}</span></td>
     <td style="font-size:12px;font-weight:500;text-align:center">${escH(p.owner)}</td>
     <td class="notes-cell">${notesHTML}</td>
@@ -5949,10 +5988,6 @@ function buildProjectRow(p) {
 
 function renderTable(filter) {
   const tbody = document.getElementById('tableBody');
-  const total    = projects.reduce((s,p)=>s+Number(p.units),0);
-  const totalNew = projects.reduce((s,p)=>s+Number(p.newUnits||0),0);
-  const tsigned  = projects.reduce((s,p)=>s+Number(p.signed),0);
-  const tpct     = total ? Math.round(tsigned/total*100) : 0;
 
   const searchEl = document.getElementById('dashSearch');
   const search = searchEl ? searchEl.value.trim().toLowerCase() : '';
@@ -5982,11 +6017,17 @@ function renderTable(filter) {
 
   tbody.innerHTML = html;
 
+  // Summary = exactly the rows on screen. Signed % is weighted: total signed / total units.
+  const total    = filtered.reduce((s,p)=>s+(Number(p.units)||0),0);
+  const totalNew = filtered.reduce((s,p)=>s+(Number(p.newUnits)||0),0);
+  const tsigned  = filtered.reduce((s,p)=>s+(Number(p.signed)||0),0);
+  const tpct     = total ? Math.round(tsigned/total*100) : 0;
+  const narrowed = filter !== 'all' || !!search;
   const e = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
-  e('tot-new',   totalNew);
-  e('tot-units', total);
-  e('tot-signed',tsigned);
-  e('tot-pct',   `${tpct}% ממוצע חתימות`);
+  e('tot-new',   totalNew.toLocaleString('he-IL'));
+  e('tot-units', total.toLocaleString('he-IL'));
+  e('tot-signed',tsigned.toLocaleString('he-IL'));
+  e('tot-pct',   `${tpct}% חתימות${narrowed ? ` · ${filtered.length} פרויקטים מסוננים` : ''}`);
 }
 
 function filterTable(f, btn) {
@@ -6119,6 +6160,7 @@ async function saveQuickAddProject() {
   if (res.status !== 'success') {
     // Nothing was ever written to live `projects` — the form keeps exactly
     // what the user typed, ready to retry.
+    if (res.status === 'conflict' && res.reason === 'stale_base') return;   // form stays filled — just press again
     if (res.status === 'conflict') { closeQuickAddProject(); return; }   // cloud reloaded; reopen to re-add if still needed
     showToast(res.status === 'blocked' ? 'המערכת בטעינה — נסה שוב בעוד רגע' : 'השמירה נכשלה — נסה שוב', 'error');
     return;
@@ -6153,7 +6195,9 @@ document.addEventListener('click', (e) => {
   if (!menu.contains(e.target) && !btn.contains(e.target)) closeHeaderActions();
 });
 
+let editorBaseRev = null, editorBaseNegRev = null;
 function openEditor() {
+  editorBaseRev = projectsRev; editorBaseNegRev = negRev;   // the draft below is built on these
   existingProjectNames = new Set(projects.map(p => p.name));
   editDraft = JSON.parse(JSON.stringify(projects)); // deep copy — edits don't touch live data
   renderEditRows();
@@ -6372,7 +6416,8 @@ async function saveEditor() {
 
   const saveResult = await atomicSave({
     projectsData: candidateProjects,
-    negotiationsData: candidateNegs
+    negotiationsData: candidateNegs,
+    baseRev: editorBaseRev, baseNegRev: editorBaseNegRev
   });
   restoreBtn();
 
@@ -6380,6 +6425,10 @@ async function saveEditor() {
     if (saveResult.status === 'error') {
       // Plain failure → beforeState is already restored above
       showToast('השמירה נכשלה — לא בוצעו שינויים', 'error');
+    } else if (saveResult.reason === 'stale_base') {
+      // Something else was saved while the editor was open. Keep the editor open so the
+      // user can see what they typed — but this draft is stale and must not be sent.
+      showToast('נשמרו שינויים אחרים מאז שפתחת את העורך, ולכן שינוייך לא נשמרו. העתק אותם, סגור ופתח את העורך מחדש', 'error');
     } else {
       // conflict → atomicSave already loaded and adopted the cloud version.
       // Do NOT restore snapProjects/snapNegs over it.
@@ -7416,10 +7465,17 @@ function openSigHistory(idx) {
 }
 
 async function clearExpectedDate(idx) {
-  const pName = projects[idx]?.name || '';
-  const name = projects[idx].name;
-  projects[idx].expectedMajorityDate = '';
-  await saveProjectsToCloud();
+  const p0 = projects[idx]; if (!p0) return;
+  const pid = p0.projectId, name = p0.name;
+  const candidate = JSON.parse(JSON.stringify(projects));
+  const cp = candidate.find(x => x.projectId === pid); if (!cp) return;
+  cp.expectedMajorityDate = '';
+  const r = await saveProjectsToCloudEx({ data: candidate });
+  if (r.status !== 'success') {
+    if (r.status !== 'conflict') showToast(r.status === 'blocked' ? 'המערכת בטעינה — נסה שוב בעוד רגע' : 'המחיקה לא נשמרה — התאריך נשאר', 'error');
+    renderSigGrid();
+    return;
+  }
   renderSigGrid();
   logActivity(name, 'edit', 'צפי רוב דרוש', null, 'צפי רוב דרוש נמחק');
 }
@@ -8231,21 +8287,39 @@ async function loadActivityLog(projName) {
   }
 }
 
+let _activityAddBusy = false;
 async function addActivityEntry() {
-  const text = document.getElementById('activityNewText').value.trim();
-  if (!text) return;
-  await fetch(LOG_URL, {
-    method: 'POST',
-    headers: LOG_HDR,
-    body: JSON.stringify({
-      username: currentUsername || 'משתמש',
-      action: 'manual',
-      entity: activeLogProject,
-      description: text
-    })
-  });
-  document.getElementById('activityNewText').value = '';
-  await loadActivityLog(activeLogProject);
+  const box = document.getElementById('activityNewText');
+  const text = box.value.trim();
+  if (!text || _activityAddBusy) return;              // no double submit
+  _activityAddBusy = true;
+  const btn = document.querySelector('[onclick="addActivityEntry()"]');
+  if (btn) btn.disabled = true;
+  try {
+    let res;
+    try {
+      res = await fetch(LOG_URL, {
+        method: 'POST', headers: LOG_HDR,
+        body: JSON.stringify({ username: currentUsername || 'משתמש', action: 'manual', entity: activeLogProject, description: text })
+      });
+    } catch (e) {
+      // Unknown outcome: the request may or may not have landed. Keep the text and
+      // show the list so the user can see whether it's there before sending again.
+      await loadActivityLog(activeLogProject);
+      showToast('לא ידוע אם הרשומה נשמרה (בעיית תקשורת) — בדוק ברשימה לפני שליחה חוזרת', 'error');
+      return;
+    }
+    if (!res.ok) {
+      showToast(res.status === 401 || res.status === 403 ? 'אין הרשאה להוסיף רשומה' : `הרשומה לא נשמרה (שגיאת שרת ${res.status}) — הטקסט נשמר, נסה שוב`, 'error');
+      return;                                          // text stays in the box
+    }
+    box.value = '';
+    await loadActivityLog(activeLogProject);
+    showToast('הרשומה נוספה ✓');
+  } finally {
+    _activityAddBusy = false;
+    if (btn) btn.disabled = false;
+  }
 }
 
 function closeActivityPanel(e) {
@@ -8438,7 +8512,23 @@ function restoreConfirmedNegotiations() {
   return true;
 }
 
-async function saveProjectsToCloudEx({ internal = false, data } = {}) {
+// A candidate is only valid against the revision it was built from. Saves wait in one
+// queue (withDataLock); by the time a queued save runs, a load or an earlier save may
+// have moved `projectsRev`. Sending the old candidate with the NEW revision would pass
+// the server's compare-and-swap and silently erase the newer data. So every user save
+// carries its base revision + data generation, and both are re-checked INSIDE the lock,
+// right before the network write, together with the write gate.
+function _rejectStaleBase() {
+  // Nothing was sent. Drop any local mutation a legacy caller made, and show the
+  // server-confirmed state the queue has already adopted.
+  try { restoreConfirmedProjects(); } catch (e) {}
+  try { restoreConfirmedNegotiations(); } catch (e) {}
+  try { renderAll(); if (typeof refreshActiveTab === 'function') refreshActiveTab(); } catch (e) {}
+  showToast('שמירה אחרת הסתיימה בינתיים — הפעולה לא נשמרה כדי לא לדרוס אותה. בצע אותה שוב', 'error');
+  return { status: 'conflict', reason: 'stale_base' };
+}
+
+async function saveProjectsToCloudEx({ internal = false, data, baseRev } = {}) {
   if (!guardVersion()) return { status: 'blocked', reason: 'version' };
   if (internal !== _INTERNAL_SAVE) {
     // §2: an external (user-triggered) call must pass the FULL readiness gate
@@ -8447,10 +8537,17 @@ async function saveProjectsToCloudEx({ internal = false, data } = {}) {
     if (!canWriteProjects()) {
       return { status: 'blocked', reason: 'not_ready' };
     }
+    const base = Number.isFinite(baseRev) ? baseRev : projectsRev;   // revision the candidate was built on
+    const gen  = dataGeneration;
     // §1: route through the single shared lock so this can never overlap with
     // ANY other save or load (saveProjectsToCloudEx, atomicSave, a background
     // refresh, a backup restore — all of them go through the same queue).
-    return withDataLock(() => _saveProjectsCritical({ data }));
+    return withDataLock(() => {
+      if (gen !== dataGeneration) return { status: 'error', reason: 'session_changed' };
+      if (!guardVersion() || !canWriteProjects()) return { status: 'blocked', reason: 'not_ready' };
+      if (projectsRev !== base) return _rejectStaleBase();
+      return _saveProjectsCritical({ data });
+    });
   }
   // Internal (called from within a load that already holds the lock): run the
   // critical section directly. Re-acquiring here would deadlock against the
@@ -9017,7 +9114,9 @@ function copyCompanyInfo(btn, text) {
   });
 }
 
+let companiesEditBaseRev = null;
 function openCompaniesEditor() {
+  companiesEditBaseRev = projectsRev;
   const body = document.getElementById('companiesEditBody');
   body.innerHTML = projects.map((p, i) => `
     <tr style="border-bottom:1px solid var(--gray-line)">
@@ -9065,8 +9164,9 @@ async function saveCompaniesEditor() {
   });
   if (!changed) { closeCompaniesEditor(); return; }
 
-  const r = await saveProjectsToCloudEx();
+  const r = await saveProjectsToCloudEx({ baseRev: companiesEditBaseRev });
   if (r.status !== 'success') {
+    if (r.status === 'conflict' && r.reason === 'stale_base') { closeCompaniesEditor(); return; }   // message already shown
     if (r.status === 'conflict') {
       // Cloud version already loaded & live. Restoring `before` here would put
       // stale data under the NEW rev — the exact bug the audit found. Close
@@ -9087,7 +9187,7 @@ async function saveCompaniesEditor() {
 }
 
 // ── App Version Check ─────────────────────────────────────
-const APP_VERSION = 90; // bump on every release
+const APP_VERSION = 92; // bump on every release
 let versionOk = true;
 
 async function checkAppVersion() {
@@ -9207,11 +9307,11 @@ function guardVersion() {
 }
 
 // ── Toast notifications ───────────────────────────────────
-function showToast(msg, type) {
+function showToast(msg, type, force) {
   // A conflict explanation must not be replaced a moment later by the generic
   // "save failed" that the calling function shows for the same event.
-  if (/משתמש אחר/.test(msg)) window.__conflictToastAt = Date.now();
-  else if (type === 'error' && Date.now() - (window.__conflictToastAt || 0) < 2500) return;
+  if (/משתמש אחר|שמירה אחרת הסתיימה|נשמרו שינויים אחרים/.test(msg)) window.__conflictToastAt = Date.now();
+  else if (type === 'error' && !force && Date.now() - (window.__conflictToastAt || 0) < 2500) return;
   const old = document.getElementById('appToast');
   if (old) old.remove();
   const t = document.createElement('div');
@@ -9266,6 +9366,7 @@ function setDocError(msg) {
 }
 
 function openCompanyDocs(idx) {
+  setTimeout(() => { retryOrphanFiles().catch(() => {}); }, 0);
   docsProjectIdx = idx;
   const p = projects[idx];
   document.getElementById('docsModalTitle').textContent = 'מסמכי חברה — ' + p.name;
@@ -9345,6 +9446,7 @@ async function uploadCompanyDoc(input) {
   prog.style.display = 'block';
   try {
     const p = projects[docsProjectIdx];
+    const pid = p.projectId, pname = p.name;   // captured BEFORE any await — `projects` may be replaced during upload
     // Strip any directory part, then allow only safe characters and collapse
     // dot-runs so "../.." can never survive into the storage path.
     const rawBase = file.name.split(/[\\/]/).pop().replace(/\.[^.]*$/, '');
@@ -9369,24 +9471,37 @@ async function uploadCompanyDoc(input) {
       else if (res.status === 413) why = 'הקובץ גדול מדי עבור השרת';
       throw new Error(why);
     }
-    if (!p.companyDocs) p.companyDocs = [];
-    // Store only the path — signed URLs are generated on demand (bucket is private)
-    p.companyDocs.push({ name: file.name, path, uploadedAt: new Date().toISOString(), uploadedBy: currentUsername || '' });
-    const okMeta = await saveProjectsToCloud();
-    if (!okMeta) {
-      // Metadata failed — remove the just-uploaded file so we don't leave an orphan
-      p.companyDocs.pop();
-      try {
-        await fetch(`${STORAGE_URL}/object/company-docs/${encodeURIComponent(path)}`, {
-          method: 'DELETE', headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY }
-        });
-      } catch(e) {}
-      setDocError('שמירת פרטי המסמך נכשלה — ההעלאה בוטלה');
-      renderDocsList();
+    // Store only the path — signed URLs are generated on demand (bucket is private).
+    // Candidate from the CURRENT state, located by projectId (the upload took time;
+    // `projects` may have been replaced meanwhile).
+    const cand = JSON.parse(JSON.stringify(projects));
+    const cp = cand.find(x => x.projectId === pid);
+    if (!cp) throw new Error('הפרויקט לא נמצא — רענן את הדף');
+    if (!Array.isArray(cp.companyDocs)) cp.companyDocs = [];
+    cp.companyDocs.push({ name: file.name, path, uploadedAt: new Date().toISOString(), uploadedBy: currentUsername || '' });
+    const meta = await saveProjectsToCloudEx({ data: cand });
+    if (meta.status !== 'success') {
+      let linked = false;
+      if (meta.status === 'error') linked = await verifyFileLinked(pid, path, 'companyDocs');   // ambiguous: ask the server
+      if (linked === true) {
+        // Saved; only our answer was lost → adopt the server state (both tables, see reloadAfterConflict)
+        const ok = await loadProjectsFromCloud(); if (ok) await loadNegotiationsFromCloud();
+        renderDocsList(); renderCompanies();
+        showToast(ok ? 'המסמך נשמר (התשובה מהשרת אבדה, הנתונים רועננו) ✓' : 'המסמך כנראה נשמר — רענן את הדף לוודא', ok ? undefined : 'error');
+      } else if (linked === false) {
+        // Provably not referenced → safe to remove the uploaded file
+        await _deleteStoredFile(path);
+        if (meta.status !== 'conflict' || meta.reason !== 'stale_base') setDocError(meta.status === 'blocked' ? 'המערכת בטעינה — נסה שוב' : 'שמירת פרטי המסמך נכשלה — ההעלאה בוטלה, נסה שוב');
+        renderDocsList();
+      } else {
+        // Unknown: never delete blindly. The file stays; a retry adds a new record only
+        // if the server shows this one missing.
+        setDocError('לא ניתן לוודא אם המסמך נרשם (בעיית תקשורת) — רענן את הדף ובדוק לפני העלאה חוזרת');
+      }
       prog.style.display = 'none'; clearInput();
       return;
     }
-    logActivity(p.name, 'edit', 'מסמך חברה', file.name, 'הועלה מסמך חדש');
+    logActivity(pname, 'edit', 'מסמך חברה', file.name, 'הועלה מסמך חדש');
     renderDocsList();
     renderCompanies();
     showToast('המסמך הועלה ✓');
@@ -9437,32 +9552,55 @@ async function downloadCompanyDoc(di) {
   } catch(e) { showToast('שגיאה בהורדת המסמך', 'error'); }
 }
 
+// Files whose record was removed but whose storage delete failed. Retried later —
+// and only after the server confirms nothing references them anymore.
+function _queueOrphanFile(pid, path) {
+  try { const q = JSON.parse(localStorage.getItem('amisaf_orphan_files') || '[]'); q.push({ pid, path }); localStorage.setItem('amisaf_orphan_files', JSON.stringify(q.slice(-50))); } catch (e) {}
+}
+async function retryOrphanFiles() {
+  let q; try { q = JSON.parse(localStorage.getItem('amisaf_orphan_files') || '[]'); } catch (e) { return; }
+  if (!q.length) return;
+  const left = [];
+  for (const it of q) {
+    const linked = await verifyFileLinked(it.pid, it.path, 'companyDocs');
+    if (linked === false) { if (!(await _deleteStoredFile(it.path))) left.push(it); }
+    else if (linked === null) left.push(it);            // unknown → try again another time; never blind-delete
+    // linked === true → it's referenced again (restore?) → forget it, don't delete
+  }
+  try { localStorage.setItem('amisaf_orphan_files', JSON.stringify(left)); } catch (e) {}
+}
+
 async function deleteCompanyDoc(di) {
-  const p = projects[docsProjectIdx];
-  const d = p.companyDocs[di];
-  if (!await appConfirm(`למחוק את "${d.name}"?`)) return;
-  // Delete the file FIRST — only drop it from the list if that succeeded
-  try {
-    const res = await fetch(`${STORAGE_URL}/object/company-docs/${encodeURIComponent(d.path)}`, {
-      method: 'DELETE', headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY }
-    });
-    if (!res.ok && res.status !== 404) {
-      showToast('מחיקת הקובץ נכשלה — המסמך לא הוסר', 'error');
-      return;
-    }
-  } catch(e) {
-    showToast('שגיאת תקשורת — המסמך לא הוסר', 'error');
-    return;
+  const p0 = projects[docsProjectIdx];
+  const d = p0 && (p0.companyDocs || [])[di];
+  if (!d) return;
+  const pid = p0.projectId, pname = p0.name, path = d.path, dname = d.name;
+  if (!await appConfirm(`למחוק את "${dname}"?`)) return;
+
+  // 1) Remove the REFERENCE first, in a server-confirmed save. The file itself is only
+  //    touched after that — so a failed save can never leave a record pointing to nothing.
+  const cand = JSON.parse(JSON.stringify(projects));
+  const cp = cand.find(x => x.projectId === pid);
+  const at = cp ? (cp.companyDocs || []).findIndex(x => x && x.path === path) : -1;
+  if (!cp || at === -1) { renderDocsList(); return; }             // already gone in the current state
+  cp.companyDocs.splice(at, 1);
+  const r = await saveProjectsToCloudEx({ data: cand });
+  let removed = r.status === 'success';
+  if (!removed && r.status === 'error') {
+    // Ambiguous (timeout / lost answer): ask the server whether the reference is gone.
+    const linked = await verifyFileLinked(pid, path, 'companyDocs');
+    if (linked === false) { removed = true; const ok = await loadProjectsFromCloud(); if (ok) await loadNegotiationsFromCloud(); }
+    else if (linked === null) { showToast('לא ידוע אם המסמך הוסר (בעיית תקשורת) — רענן את הדף ובדוק', 'error'); renderDocsList(); return; }
   }
-  const removed = p.companyDocs.splice(di, 1)[0];
-  const ok = await saveProjectsToCloud();
-  if (!ok) {
-    p.companyDocs.splice(di, 0, removed);
-    showToast('הקובץ נמחק אך עדכון הרשימה נכשל — רענן את הדף', 'error');
+  if (!removed) {
+    if (r.status !== 'conflict') showToast(r.status === 'blocked' ? 'המערכת בטעינה — נסה שוב בעוד רגע' : 'הסרת המסמך נכשלה — המסמך לא נמחק', 'error');
     renderDocsList();
-    return;
+    return;                                                       // nothing deleted, nothing to roll back
   }
-  logActivity(p.name, 'delete', 'מסמך חברה', d.name, 'המסמך נמחק');
+  // 2) The reference is confirmed gone → delete the file. If that fails, the file is merely
+  //    unreferenced (invisible, harmless) and is queued for a checked retry.
+  if (!(await _deleteStoredFile(path))) _queueOrphanFile(pid, path);
+  logActivity(pname, 'delete', 'מסמך חברה', dname, 'המסמך נמחק');
   renderDocsList();
   renderCompanies();
   showToast('המסמך נמחק ✓');
@@ -9556,7 +9694,7 @@ function appPrompt(message, defaultValue){ return _appDialog({ message, type: 'p
 // On 'conflict' the CLOUD version is authoritative: this function reloads it
 // into memory. Callers must NOT restore their old local snapshot on top.
 
-async function atomicSave({ projectsData, negotiationsData, includeNegotiations = true, _internal } = {}) {
+async function atomicSave({ projectsData, negotiationsData, includeNegotiations = true, _internal, baseRev, baseNegRev } = {}) {
   if (!projectsRowId) return { status: 'error', reason: 'no_projects_row' };
   const needsNeg = includeNegotiations !== false;
 
@@ -9567,9 +9705,17 @@ async function atomicSave({ projectsData, negotiationsData, includeNegotiations 
     if (!(needsNeg ? canWriteNegotiations() : canWriteProjects())) {
       return { status: 'error', reason: 'writes_blocked' };
     }
+    const baseP = Number.isFinite(baseRev) ? baseRev : projectsRev;
+    const baseN = Number.isFinite(baseNegRev) ? baseNegRev : negRev;
+    const gen   = dataGeneration;
     // §1: same shared lock as every other save/load. A dual-table atomic write
     // and a single-table write can never race each other for the projects row.
-    return withDataLock(() => _atomicSaveCritical({ projectsData, negotiationsData, includeNegotiations }));
+    return withDataLock(() => {
+      if (gen !== dataGeneration) return { status: 'error', reason: 'session_changed' };
+      if (!guardVersion() || !(needsNeg ? canWriteNegotiations() : canWriteProjects())) return { status: 'error', reason: 'writes_blocked' };
+      if (projectsRev !== baseP || (needsNeg && negRev !== baseN)) return _rejectStaleBase();
+      return _atomicSaveCritical({ projectsData, negotiationsData, includeNegotiations });
+    });
   }
   return _atomicSaveCritical({ projectsData, negotiationsData, includeNegotiations });
 }
@@ -11168,7 +11314,11 @@ function renderRefusers() {
     const activeRefs = refs.filter(r=>r.status!=='חתם ✓');
     const gap = projectMajorityGap(p);
     const critical = gap !== null && gap > 0 && activeRefs.length >= gap;
-    const unitPct = p.units ? (100/p.units).toFixed(1) : null;
+    // One apartment's weight in the project — NOT per person: several rights holders can
+    // share one apartment. Not shown when the project's unit count disagrees with the tabu.
+    const _tm = (p.tenants || []).length ? tenantMajority(p) : null;
+    const unitsMismatch = !!(_tm && _tm.aptTotal > 0 && Number(p.units) > 0 && _tm.aptTotal !== Number(p.units));
+    const unitPct = (p.units && !unitsMismatch) ? (100/p.units).toFixed(1) : null;
 
     const rows = refs.length ? refs.map((r, ri) => {
       const st = REF_STATUS_STYLE[r.status] || REF_STATUS_STYLE['טרם טופל'];
@@ -11280,7 +11430,8 @@ function renderRefusers() {
           <span style="font-size:17px;font-weight:800;color:var(--navy)">${escH(p.name)}</span>
           ${activeRefs.length?`<span style="font-size:13px;font-weight:700;padding:4px 13px;border-radius:99px;background:#fef2f2;color:#dc2626">${activeRefs.length} דיירים פעילים</span>`:''}
           ${critical?`<span style="font-size:13px;font-weight:800;padding:4px 13px;border-radius:99px;background:#dc2626;color:white">🔥 חוסמים את הרוב — חסרים ${gap} לרוב</span>`:''}
-          ${unitPct&&activeRefs.length?`<span style="font-size:12px;color:var(--gray-4)">כל דייר = ${unitPct}%</span>`:''}
+          ${unitPct&&activeRefs.length?`<span style="font-size:12px;color:var(--gray-4)" title="משקל דירה אחת לפי ${Number(p.units)} היחידות הרשומות בפרויקט. בדירה יכולים להיות כמה בעלי זכויות.">כל דירה ≈ ${unitPct}% מהפרויקט</span>`:''}
+          ${unitsMismatch&&activeRefs.length?`<span style="font-size:12px;color:#a16207" title="מספר היחידות בפרויקט שונה ממספר הדירות בנסח — לא ניתן לחשב משקל דירה">⚠ יחידות בפרויקט (${Number(p.units)}) ≠ דירות בנסח (${_tm.aptTotal})</span>`:''}
         </div>
         <button onclick="openRefuserModal(${pi},null)" class="admin-only editor-allow" style="font-family:Heebo,sans-serif;font-size:14px;font-weight:700;padding:9px 20px;border-radius:10px;border:1.5px dashed var(--mid-blue);background:#f0f6ff;color:var(--mid-blue);cursor:pointer">＋ הוסף דייר</button>
       </div>
