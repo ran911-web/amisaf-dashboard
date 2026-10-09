@@ -5886,10 +5886,11 @@ function renderBarChart() {
   </div>`;
   const rows = sorted.map(p => {
     const pct = p.units ? Math.round(p.signed/p.units*100) : 0;
-    const col = pctBarColor(pct);
-    const textCol = pct >= 67 ? '#15803d' : pct >= 50 ? '#92400e' : '#dc2626';
+    const tier = majorityTier(p);
+    const col = TIER_BAR[tier];
+    const textCol = TIER_TXT[tier];
     const needed = requiredSignatures(p);
-    const remaining = Math.max(0, needed - p.signed);
+    const remaining = majorityGap(p) || 0;
     return `<div class="bar-row">
       <div class="bar-track"></div>
       <div class="bar-fill" style="width:${pct}%;background:${col}"></div>
@@ -5929,6 +5930,9 @@ function renderDonut() {
   keys.forEach((k,i) => { if(items[i]) items[i].textContent = counts[k]; });
 }
 
+// Signing target means nothing once the majority is in or the project is done.
+// Display only — the stored value is kept (nothing is deleted from the data).
+const TARGET_NOT_RELEVANT = ['רוב דרוש – טיפול בסרבנים', 'הושלם'];
 function buildProjectRow(p) {
   const idx  = projects.indexOf(p);
   const pct  = p.units ? Math.round(p.signed/p.units*100) : 0;
@@ -5965,7 +5969,7 @@ function buildProjectRow(p) {
           ${negIndicator}
         </div>
         <div class="buildings-inline" id="bil-${idx}" style="display:none;margin-top:8px;background:var(--gray-bg);border-radius:8px;padding:8px 10px;border:1px solid var(--gray-line)">
-          ${(p.buildings||[]).map(b=>{ const bpct=b.units?Math.round(b.signed/b.units*100):0; const bc=bpct>=67?'#22c55e':bpct>=50?'#f59e0b':'#ef4444'; return `<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--gray-line);font-size:11px"><span style="color:var(--text)">${escH(b.name)}</span><span style="font-weight:700;color:${bc}">${b.signed}/${b.units} (${bpct}%)</span></div>`; }).join('')}
+          ${(p.buildings||[]).map(b=>{ const bpct=b.units?Math.round(b.signed/b.units*100):0; const bc=(b.units&&Number(b.signed)>=requiredSignatures(b.units))?'#22c55e':bpct>=50?'#f59e0b':'#ef4444'; return `<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--gray-line);font-size:11px"><span style="color:var(--text)">${escH(b.name)}</span><span style="font-weight:700;color:${bc}">${b.signed}/${b.units} (${bpct}%)</span></div>`; }).join('')}
         </div>
       </div>
     </div></td>
@@ -5973,10 +5977,12 @@ function buildProjectRow(p) {
     <td style="text-align:center;font-weight:600">${p.units}</td>
     <td style="text-align:center;font-weight:600">${p.signed}</td>
     <td><div class="pct-cell">
-      <span class="pct-num ${pctColor(pct)}">${pct}%</span>
-      <div class="pct-bar"><div class="pct-bar-fill" style="width:${pct}%;background:${pctBarColor(pct)}"></div></div>
-    </div></td>
+      <span class="pct-num pct-${majorityTier(p)}">${pct}%</span>
+      <div class="pct-bar"><div class="pct-bar-fill" style="width:${pct}%;background:${TIER_BAR[majorityTier(p)]}"></div></div>
+    </div>${(()=>{ const m = majorityInfo(p); return (m.pending.length && m.projectGap === 0)
+      ? `<div style="font-size:10px;font-weight:700;color:#b45309;margin-top:2px" title="${escH(pendingBuildingsText(m))}">⚠ אין ⅔ בכל הבניינים</div>` : ''; })()}</td>
     <td style="font-size:11px;color:var(--text-2);white-space:nowrap;text-align:center">${
+      TARGET_NOT_RELEVANT.includes(p.status) ? '<span style="color:var(--gray-4)">—</span>' :
       (p.target && !/^\s*(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{4}-\d{2}-\d{2}|\d{1,2}[\/.\-]\d{4}|Q[1-4]\s*\d{4}|רבעון.*)\s*$/i.test(String(p.target)))
         ? `<span style="color:#b45309" title="ערך לא תקין — צפוי תאריך. ניתן לתקן בעריכה">⚠ ${escH(p.target)}</span>`
         : escH(p.target)}</td>
@@ -7234,8 +7240,9 @@ function renderBuildingsModalBody() {
   const totalU = buildings.reduce((s,b)=>s+Number(b.units||0),0);
   const totalS = buildings.reduce((s,b)=>s+Number(b.signed||0),0);
   const totalPct = totalU ? Math.round(totalS/totalU*100) : 0;
-  const totalCol = totalPct>=67?'#166534':totalPct>=50?'#92400e':'#991b1b';
-  const totalBg  = totalPct>=67?'var(--green-light)':totalPct>=50?'var(--yellow-light)':'var(--red-light)';
+  const _t = majorityTier(p);
+  const totalCol = ({green:'#166534',amber:'#92400e',red:'#991b1b'})[_t];
+  const totalBg  = ({green:'var(--green-light)',amber:'var(--yellow-light)',red:'var(--red-light)'})[_t];
 
   document.getElementById('bmodalSub').textContent = buildings.length
     ? `${buildings.length} בניינים · ${totalS} חתמו מתוך ${totalU} יחידות`
@@ -7258,9 +7265,10 @@ function renderBuildingsModalBody() {
 
   const cards = buildings.length ? buildings.map((b,bi) => {
     const pct = b.units ? Math.round(b.signed/b.units*100) : 0;
-    const col = pct>=67?'#22c55e':pct>=50?'#f59e0b':'#ef4444';
-    const fg  = pct>=67?'#166534':pct>=50?'#92400e':'#991b1b';
     const needed = requiredSignatures(b.units);
+    const _ok = b.units && Number(b.signed) >= needed;
+    const col = _ok?'#22c55e':pct>=50?'#f59e0b':'#ef4444';
+    const fg  = _ok?'#166534':pct>=50?'#92400e':'#991b1b';
     return `<div class="building-card">
       <div class="building-card-head">
         <div class="building-card-name">${escH(b.name||'בניין '+(bi+1))}</div>
@@ -7456,8 +7464,7 @@ function openSigHistory(idx) {
     </div>`;
   document.body.appendChild(overlay);
   // Hide expected date input if full majority already reached
-  const _needed = requiredSignatures(p);
-  const _fullMaj = p.signed >= _needed && (!p.buildings||!p.buildings.length||p.buildings.every(b=>b.units&&Number(b.signed)>=requiredSignatures(b.units)));
+  const _fullMaj = majorityInfo(p).reached;
   if (_fullMaj) {
     const wrap = document.getElementById('sigHistExpectedWrap');
     if (wrap) { wrap.style.display='none'; document.getElementById('sigHistGrid').style.gridTemplateColumns='1fr'; }
@@ -7538,8 +7545,7 @@ async function saveSigHistoryEntry(idx, overlay) {
   // Majority email: only on a REAL crossing from below the threshold to at/above it.
   // Comparing counts (not rounded percentages) and using the true previous value
   // means adding a note to an already-majority project sends nothing.
-  const required = requiredSignatures(units);
-  if (units && prevSigned < required && signed >= required) {
+  if (units && !majorityInfo({...p, signed: prevSigned}).reached && majorityInfo({...p, signed}).reached) {
     notifyMajorityReached({...p, signed});
   }
 }
@@ -7564,7 +7570,7 @@ function renderSigGrid() {
   }
   grid.innerHTML = sorted.map(p => {
     const pct = p.units ? Math.round(p.signed/p.units*100) : 0;
-    const cls = sigClass(pct);
+    const cls = majorityTier(p);
     const expectedDate = p.expectedMajorityDate || '';
     const sigHistory = p.sigHistory || [];
     return `<div class="sig-card ${cls}" ondblclick="openSigHistory(${projects.indexOf(p)})">
@@ -7582,11 +7588,12 @@ function renderSigGrid() {
         <span>${p.signed} חתמו מתוך ${p.units} יחידות</span>
         <span>${p.units - p.signed} נותרו</span>
       </div>
-      <div class="sig-threshold">סף ⅔: ${requiredSignatures(p)} חתימות נדרשות</div>
+      <div class="sig-threshold">${(()=>{ const m = majorityInfo(p);
+        if (!m.multi) return `סף ⅔: ${requiredSignatures(p)} חתימות נדרשות`;
+        return m.pending.length ? `נדרש ⅔ בכל בניין · <b style="color:#b45309">${escH(pendingBuildingsText(m))}</b>` : 'רוב ⅔ בכל הבניינים ✓'; })()}</div>
       <button onclick="event.stopPropagation();openSigHistory(${projects.indexOf(p)})" class="admin-only editor-allow" style="margin-top:10px;font-family:Heebo,sans-serif;font-size:12px;font-weight:700;padding:6px 12px;border-radius:8px;border:1px solid #dbe5f5;background:white;color:var(--mid-blue);cursor:pointer">✍️ עדכון חתימות</button>
       ${(()=>{
-        const needed = requiredSignatures(p);
-        const hasAll = p.signed >= needed && (!p.buildings||!p.buildings.length||p.buildings.every(b=>b.units&&Number(b.signed)>=requiredSignatures(b.units)));
+        const hasAll = majorityInfo(p).reached;
         const pidx = projects.indexOf(p);
         if (!expectedDate || hasAll) return '';
         return `<div style="margin-top:12px">
@@ -7631,7 +7638,7 @@ function startSigPresentation() {
 
   const cards = sorted.map(p => {
     const pct = p.units ? Math.round(p.signed/p.units*100) : 0;
-    const cls = sigClass(pct);
+    const cls = majorityTier(p);
     const needed = requiredSignatures(p);
     return `<div class="sig-pres-card ${cls}">
       <div class="sig-pres-name">${escH(p.name)}</div>
@@ -7745,8 +7752,9 @@ async function exportToExcel() {
 
         if (ci === 6) { // % חתימות
           cell.numFmt = '0%';
-          const pctBg = pct>=67?'FFE2EFDA':pct>=50?'FFFFF2CC':'FFFFEBEE';
-          const pctFg = pct>=67?'FF2E7D32':pct>=50?'FF833C00':'FF9C0006';
+          const _tier = majorityTier(p);
+          const pctBg = ({green:'FFE2EFDA',amber:'FFFFF2CC',red:'FFFFEBEE'})[_tier];
+          const pctFg = ({green:'FF2E7D32',amber:'FF833C00',red:'FF9C0006'})[_tier];
           cell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:pctBg} };
           cell.font = { name:'Arial', size:9, bold:true, color:{argb:pctFg} };
         } else if (ci === 9) { // סטטוס
@@ -8146,7 +8154,7 @@ function openProjectQuickView(idx) {
   document.getElementById('qvAddr').textContent = p.addr;
 
   const pct = p.units ? Math.round(p.signed/p.units*100) : 0;
-  const pctColor = pct>=67?'var(--green)':pct>=50?'var(--amber)':'var(--red)';
+  const pctColor = ({green:'var(--green)',amber:'var(--amber)',red:'var(--red)'})[majorityTier(p)];
   const STATUS_LABELS = {
     'הושלם':'✔ הושלם','בטיוטת חוזה':'📝 בטיוטת חוזה',
     'בחתימות חוזה':'✍️ בחתימות חוזה','רוב דרוש – טיפול בסרבנים':'⚠️ רוב דרוש'
@@ -9187,7 +9195,7 @@ async function saveCompaniesEditor() {
 }
 
 // ── App Version Check ─────────────────────────────────────
-const APP_VERSION = 92; // bump on every release
+const APP_VERSION = 93; // bump on every release
 let versionOk = true;
 
 async function checkAppVersion() {
@@ -10024,12 +10032,34 @@ function requiredSignatures(unitsOrProject) {
     : Number(unitsOrProject) || 0;
   return Math.ceil(units * 2 / 3);
 }
-function majorityGap(project) {
+// Majority for a multi-building project: the shown % is the cumulative one (all buildings
+// together), but ⅔ is reached only when EVERY building reached its own ⅔ AND the project total
+// did. Each building is checked separately; the gap is the signatures still missing in total.
+function majorityInfo(project) {
   const units  = Number(project?.units)  || 0;
   const signed = Number(project?.signed) || 0;
-  if (!units) return null;
-  const gap = requiredSignatures(units) - signed;
-  return gap > 0 ? gap : 0;
+  const pct = units ? Math.round(signed / units * 100) : 0;
+  const projectGap = units ? Math.max(0, requiredSignatures(units) - signed) : null;
+  const bs = (Array.isArray(project?.buildings) ? project.buildings : []).filter(b => Number(b.units) > 0);
+  const pending = bs.map(b => ({ name: b.name || '', gap: Math.max(0, requiredSignatures(b.units) - (Number(b.signed) || 0)) }))
+                    .filter(b => b.gap > 0);
+  const buildingsGap = pending.reduce((a, b) => a + b.gap, 0);
+  const gap = projectGap === null ? null : Math.max(projectGap, buildingsGap);
+  return { units, signed, pct, gap, projectGap, buildingsGap, pending, multi: bs.length > 1,
+           reached: gap === 0 };
+}
+// green only when the majority is really reached; otherwise by the cumulative %
+function majorityTier(project) {
+  const m = majorityInfo(project);
+  return m.reached ? 'green' : m.pct >= 50 ? 'amber' : 'red';
+}
+const TIER_BAR = { green:'#22c55e', amber:'#f59e0b', red:'#ef4444' };
+const TIER_TXT = { green:'#15803d', amber:'#92400e', red:'#dc2626' };
+function pendingBuildingsText(m) {
+  return m.pending.map(b => `${b.name || 'בניין'}: חסרות ${b.gap}`).join(' · ');
+}
+function majorityGap(project) {
+  return majorityInfo(project).gap;
 }
 function hasMajority(project) {
   return majorityGap(project) === 0;
@@ -10223,8 +10253,7 @@ async function fabQuickSig() {
   renderAll();
   showToast(`עודכן: ${num}/${units} חתימות ✓`);
 
-  const required = requiredSignatures(units);
-  if (units && prevSigned < required && num >= required && typeof notifyMajorityReached === 'function') {
+  if (units && !majorityInfo({...p, signed: prevSigned}).reached && majorityInfo({...p, signed: num}).reached && typeof notifyMajorityReached === 'function') {
     notifyMajorityReached(p);
   }
 }
@@ -10650,7 +10679,7 @@ async function saveRefuser() {
       logActivity(bp.name, 'edit', 'חתימות', `${after}/${units}`, `עודכן לאחר חתימת ${entry.name}`);
       renderAll();
       const req2 = requiredSignatures(units);
-      if (units && before < req2 && after >= req2 && typeof notifyMajorityReached === 'function') notifyMajorityReached(bp);
+      if (units && !majorityInfo({...bp, signed: before}).reached && majorityInfo({...bp, signed: after}).reached && typeof notifyMajorityReached === 'function') notifyMajorityReached(bp);
     }
   }
 }
