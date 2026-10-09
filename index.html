@@ -2027,6 +2027,67 @@
     .tab-btn .tab-ico { display: none; }
     .tab-btn { padding: 10px 9px; }
   }
+
+  /* ═══════ Phone layout for the projects table — one card per project ═══════ */
+  .mobile-sort { display: none; }
+  @media (max-width: 600px) {
+    .table-card { overflow-x: visible !important; }
+    .table-card .card-head { flex-direction: column; align-items: stretch; gap: 10px; }
+    .table-card .filter-row { flex-wrap: wrap; gap: 6px; }
+    .table-card .filter-row #dashSearch { width: 100% !important; flex: 1 1 100%; font-size: 14px !important; padding: 10px 12px !important; }
+    .table-card .filter-btn { padding: 7px 12px; font-size: 12px; }
+    .mobile-sort { display: block; flex: 1 1 100%; font-family: Heebo, sans-serif; font-size: 13px; padding: 9px 12px;
+      border: 1px solid var(--gray-3); border-radius: var(--radius-el); background: white; color: var(--navy); }
+    table.proj-table, table.proj-table tbody, table.proj-table tfoot { display: block; width: 100%; min-width: 0 !important; }
+    table.proj-table thead { display: none; }
+    table.proj-table tbody tr {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px 8px;
+      grid-template-areas: "name name name" "pct pct pct" "units signed new" "status status status" "target owner owner" "notes notes notes";
+      padding: 14px 14px 12px; margin: 10px 0; border: 1.5px solid #e2e8f0; border-radius: 14px; background: white;
+      box-shadow: 0 1px 3px rgba(15,31,61,.05);
+    }
+    table.proj-table tbody tr:hover td { background: transparent; }
+    table.proj-table td { display: block; padding: 0 !important; border: none !important; text-align: right !important; min-width: 0; }
+    table.proj-table td.c-name   { grid-area: name; }
+    table.proj-table td.c-pct    { grid-area: pct; }
+    table.proj-table td.c-units  { grid-area: units; }
+    table.proj-table td.c-signed { grid-area: signed; }
+    table.proj-table td.c-new    { grid-area: new; }
+    table.proj-table td.c-status { grid-area: status; }
+    table.proj-table td.c-target { grid-area: target; white-space: normal !important; }
+    table.proj-table td.c-owner  { grid-area: owner; }
+    table.proj-table td.c-notes  { grid-area: notes; max-width: none !important; min-width: 0 !important; }
+    table.proj-table td.c-units, table.proj-table td.c-signed, table.proj-table td.c-new {
+      background: #f8fafc; border-radius: 10px; padding: 8px 6px !important; text-align: center !important;
+      font-size: 17px !important; font-weight: 800 !important; color: var(--navy) !important;
+    }
+    table.proj-table td.c-new { color: var(--text-2) !important; font-weight: 700 !important; }
+    table.proj-table td.c-target, table.proj-table td.c-owner { font-size: 13px !important; color: var(--text) !important; }
+    table.proj-table td[data-label]::before { content: attr(data-label); display: block; font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 3px; }
+    table.proj-table .proj-name { font-size: 16px; }
+    table.proj-table .pct-cell { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    table.proj-table .pct-bar { flex: 1; width: auto; height: 9px; }
+    table.proj-table .pct-num { font-size: 18px; min-width: 48px; }
+    table.proj-table .note-tooltip { display: none !important; }
+    table.proj-table .note-preview, table.proj-table .note-empty { max-width: none; }
+    table.proj-table .notes-cell .note-preview-text { white-space: normal; -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+    /* group headers and the empty row stay full-width strips */
+    table.proj-table tbody tr.proj-group-header { display: block; padding: 0; border: none; border-radius: 10px; margin: 16px 0 4px; box-shadow: none; background: #1f3864; }
+    table.proj-table tbody tr.proj-group-header.proj-group-pinuy { background: #0369a1; }
+    table.proj-table tbody tr.proj-group-header td { padding: 10px 14px !important; }
+    table.proj-table tbody tr:has(> td[colspan]):not(.proj-group-header) { display: block; }
+    /* totals */
+    table.proj-table tfoot tr.totals { display: grid; grid-template-columns: auto 1fr 1fr 1fr; gap: 6px 10px; align-items: center;
+      padding: 12px 14px; margin-top: 6px; background: var(--pale-blue); border-radius: 12px; }
+    table.proj-table tfoot tr.totals td { padding: 0 !important; text-align: center !important; font-size: 16px !important; background: transparent !important; color: var(--navy) !important; font-weight: 800 !important; }
+    table.proj-table tfoot tr.totals td:first-child { text-align: right !important; font-size: 13px !important; }
+    table.proj-table tfoot tr.totals td#tot-pct { grid-column: 1 / -1; text-align: right !important; font-size: 12px !important; font-weight: 600 !important; color: var(--text-2) !important; border-top: 1px solid rgba(26,86,219,.15); padding-top: 6px !important; }
+    table.proj-table tfoot tr.totals td#tot-new::before, table.proj-table tfoot tr.totals td#tot-units::before, table.proj-table tfoot tr.totals td#tot-signed::before
+      { display: block; font-size: 10px; color: #64748b; font-weight: 600; margin-bottom: 1px; }
+    table.proj-table tfoot tr.totals td#tot-new::before  { content: 'חדשות'; }
+    table.proj-table tfoot tr.totals td#tot-units::before{ content: 'קיימות'; }
+    table.proj-table tfoot tr.totals td#tot-signed::before{ content: 'חתמו'; }
+  }
 </style>
 </head>
 <body>
@@ -2866,6 +2927,15 @@
         <button class="filter-btn" data-filter="בחתימות חוזה" onclick="filterTable('בחתימות חוזה',this)">בחתימות חוזה</button>
         <button class="filter-btn" data-filter="הושלם" onclick="filterTable('הושלם',this)">הושלם</button>
         <button class="filter-btn" data-filter="רוב דרוש – טיפול בסרבנים" onclick="filterTable('רוב דרוש – טיפול בסרבנים',this)">רוב דרוש</button>
+        <select id="mobileSort" class="mobile-sort" aria-label="מיון" onchange="sortCol=null; if(this.value){ sortTable(this.value); if(['pct','units','signed','newUnits'].includes(this.value)) sortTable(this.value); } else renderTable(currentFilter());">
+          <option value="">מיון: ברירת מחדל</option>
+          <option value="pct">% חתימות</option>
+          <option value="units">יח' קיימות</option>
+          <option value="signed">חתמו</option>
+          <option value="newUnits">יח' חדשות</option>
+          <option value="name">שם</option>
+          <option value="status">סטטוס</option>
+        </select>
       </div>
     </div>
     <table class="proj-table">
@@ -5957,7 +6027,7 @@ function buildProjectRow(p) {
   const negIndicator = '';
 
   return `<tr>
-    <td><div class="proj-name-cell">
+    <td class="c-name"><div class="proj-name-cell">
       <div class="proj-accent" style="background:${ACCENT[p.status]||'#1a56db'}"></div>
       <div>
         <div class="proj-name proj-name-link" onclick="openProjectQuickView(${idx})" style="cursor:pointer;display:flex;align-items:center;gap:7px">${typeDot(p.type)}${escH(p.name)}</div>
@@ -5973,22 +6043,22 @@ function buildProjectRow(p) {
         </div>
       </div>
     </div></td>
-    <td style="color:var(--text-2);font-size:11px;text-align:center">${escH(p.newUnits||0)}
-    <td style="text-align:center;font-weight:600">${p.units}</td>
-    <td style="text-align:center;font-weight:600">${p.signed}</td>
-    <td><div class="pct-cell">
+    <td class="c-new" data-label="יח' חדשות" style="color:var(--text-2);font-size:11px;text-align:center">${escH(String(p.newUnits||0))}</td>
+    <td class="c-units" data-label="יח' קיימות" style="text-align:center;font-weight:600">${p.units}</td>
+    <td class="c-signed" data-label="חתמו" style="text-align:center;font-weight:600">${p.signed}</td>
+    <td class="c-pct"><div class="pct-cell">
       <span class="pct-num pct-${majorityTier(p)}">${pct}%</span>
       <div class="pct-bar"><div class="pct-bar-fill" style="width:${pct}%;background:${TIER_BAR[majorityTier(p)]}"></div></div>
     </div>${(()=>{ const m = majorityInfo(p); return (m.pending.length && m.projectGap === 0)
       ? `<div style="font-size:10px;font-weight:700;color:#b45309;margin-top:2px" title="${escH(pendingBuildingsText(m))}">⚠ אין ⅔ בכל הבניינים</div>` : ''; })()}</td>
-    <td style="font-size:11px;color:var(--text-2);white-space:nowrap;text-align:center">${
+    <td class="c-target" data-label="יעד לחתימה" style="font-size:11px;color:var(--text-2);white-space:nowrap;text-align:center">${
       TARGET_NOT_RELEVANT.includes(p.status) ? '<span style="color:var(--gray-4)">—</span>' :
       (p.target && !/^\s*(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{4}-\d{2}-\d{2}|\d{1,2}[\/.\-]\d{4}|Q[1-4]\s*\d{4}|רבעון.*)\s*$/i.test(String(p.target)))
         ? `<span style="color:#b45309" title="ערך לא תקין — צפוי תאריך. ניתן לתקן בעריכה">⚠ ${escH(p.target)}</span>`
         : escH(p.target)}</td>
-    <td><span class="badge ${sc.cls}">${sc.icon} ${p.status}</span></td>
-    <td style="font-size:12px;font-weight:500;text-align:center">${escH(p.owner)}</td>
-    <td class="notes-cell">${notesHTML}</td>
+    <td class="c-status"><span class="badge ${sc.cls}">${sc.icon} ${p.status}</span></td>
+    <td class="c-owner" data-label="אחראי" style="font-size:12px;font-weight:500;text-align:center">${escH(p.owner)}</td>
+    <td class="notes-cell c-notes">${notesHTML}</td>
   </tr>`;
 }
 
@@ -9195,7 +9265,7 @@ async function saveCompaniesEditor() {
 }
 
 // ── App Version Check ─────────────────────────────────────
-const APP_VERSION = 93; // bump on every release
+const APP_VERSION = 94; // bump on every release
 let versionOk = true;
 
 async function checkAppVersion() {
