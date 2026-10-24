@@ -2,7 +2,8 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data: https://cdn.jsdelivr.net; connect-src 'self' https://hjlgkhfrovtpmyeczzze.supabase.co https://api.emailjs.com https://api.anthropic.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://hjlgkhfrovtpmyeczzze.supabase.co; font-src 'self' data: https://cdn.jsdelivr.net; connect-src 'self' https://hjlgkhfrovtpmyeczzze.supabase.co https://api.emailjs.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'">
+<script>if (window.top !== window.self) { try { window.top.location = window.self.location; } catch (e) { document.documentElement.style.display = 'none'; } }</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <link rel="manifest" href="manifest.json">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.4.1/dist/email.min.js" integrity="sha384-SALc35EccAf6RzGw4iNsyj7kTPr33K7RoGzYu+7heZhT8s0GZouafRiCg1qy44AS" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -2205,7 +2206,7 @@
     <div class="chpass-sub">זוהי כניסתך הראשונה למערכת.<br>אנא בחר סיסמה חדשה שתשתמש בה מעכשיו.</div>
     <div class="chpass-field">
       <label>סיסמה חדשה</label>
-      <input type="password" id="cpNewPass" placeholder="לפחות 6 תווים">
+      <input type="password" id="cpNewPass" placeholder="לפחות 8 תווים">
     </div>
     <div class="chpass-field">
       <label>אימות סיסמה</label>
@@ -4018,6 +4019,8 @@ function loadPdfJs() {
     if (window.pdfjsLib) return resolve(window.pdfjsLib);
     const s = document.createElement('script');
     s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    s.integrity = 'sha512-q+4liFwdPC/bNdhUpZx6aXDx/h77yEQtn4I1slHydcbZK34nLaR3cAeYSJshoxIOq3mjEf7xJE8YWIUHMn+oCQ==';
+    s.referrerPolicy = 'no-referrer';
     s.crossOrigin = 'anonymous';
     s.onload = () => {
       if (window.pdfjsLib) {
@@ -7044,7 +7047,7 @@ async function addUser() {
 
   msg.style.display = 'none';
   if (!username || !password) { showUserMsg('נא למלא שם משתמש וסיסמה', 'error'); return; }
-  if (password.length < 6)    { showUserMsg('הסיסמה חייבת להכיל לפחות 6 תווים', 'error'); return; }
+  if (password.length < 8)    { showUserMsg('הסיסמה חייבת להכיל לפחות 8 תווים', 'error'); return; }
 
   const hash = await sha256hex(password);
   const res = await callRpc('create_user', { p_username: username, p_hash: hash, p_role: role, p_email: email });
@@ -7075,7 +7078,7 @@ async function deleteUser(id, username) {
 async function resetUserPass(id, username) {
   const newPass = await appPrompt(`הזן סיסמה זמנית חדשה עבור "${username}" (לפחות 4 תווים):`);
   if (!newPass) return;
-  if (newPass.length < 6) { showUserMsg('הסיסמה חייבת להכיל לפחות 6 תווים', 'error'); return; }
+  if (newPass.length < 8) { showUserMsg('הסיסמה חייבת להכיל לפחות 8 תווים', 'error'); return; }
   const hash = await sha256hex(newPass);
   const res = await callRpc('reset_user_password', { p_id: id, p_hash: hash });
   const r = (await res.json().catch(()=>null)) || {};
@@ -8765,6 +8768,7 @@ async function doLogin() {
       initEmailJS();
       checkAppVersion();
       setInterval(checkAppVersion, 5*60*1000);
+      startIdleLogout();
       if (document.getElementById('rememberMe')?.checked) {
         localStorage.setItem('amisaf_remember', JSON.stringify({u: username}));
       } else {
@@ -8822,7 +8826,7 @@ async function submitChangePass() {
   const p2 = document.getElementById('cpConfirmPass').value;
   const err = document.getElementById('cpErr');
   err.classList.remove('show');
-  if (p1.length < 6) { err.textContent='הסיסמה חייבת להכיל לפחות 6 תווים'; err.classList.add('show'); return; }
+  if (p1.length < 8) { err.textContent='הסיסמה חייבת להכיל לפחות 8 תווים'; err.classList.add('show'); return; }
   if (p1 !== p2)     { err.textContent='הסיסמאות אינן תואמות'; err.classList.add('show'); return; }
   const hash = await sha256hex(p1);
   const res = await fetch(`${SUPA_URL}/rest/v1/rpc/set_own_password`, {
@@ -8855,7 +8859,36 @@ function showForgotMsg() {
   if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
- function doLogout() {
+// ── Automatic logout after 60 minutes without activity (shared / unattended computers) ──
+// Not while presenting (meeting mode / presentation overlay) and never in the middle of a save.
+const IDLE_LIMIT_MS = 60 * 60 * 1000, IDLE_WARN_MS = 55 * 60 * 1000;
+let _idleLast = Date.now(), _idleWarned = false, _idleTimer = null;
+function _idleTouch() { _idleLast = Date.now(); _idleWarned = false; }
+function _idlePresenting() {
+  return document.body.classList.contains('meeting-mode') ||
+         (document.getElementById('presOverlay')?.classList.contains('open')) || !!document.getElementById('sigPresOverlay') || !!document.getElementById('negPresOverlay');
+}
+function _idleCheck() {
+  if (!window.__sessionToken && !currentRole) return;
+  if (_idlePresenting()) { _idleTouch(); return; }
+  const idle = Date.now() - _idleLast;
+  if (idle >= IDLE_LIMIT_MS) {
+    if (typeof loadInProgress !== 'undefined' && loadInProgress) return;   // finish the save/load first
+    try { localStorage.setItem('amisaf_idle_logout', String(Date.now())); } catch (e) {}
+    doLogout();
+  } else if (idle >= IDLE_WARN_MS && !_idleWarned) {
+    _idleWarned = true;
+    showToast('לא זוהתה פעילות — המערכת תתנתק בעוד 5 דקות. הזז את העכבר כדי להישאר מחובר', 'info');
+  }
+}
+function startIdleLogout() {
+  _idleTouch();
+  if (_idleTimer) return;
+  ['pointerdown','keydown','wheel','touchstart','mousemove'].forEach(ev => document.addEventListener(ev, _idleTouch, { passive: true, capture: true }));
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) _idleCheck(); });
+  _idleTimer = setInterval(_idleCheck, 30 * 1000);
+}
+function doLogout() {
   // End the session server-side (best effort; the reload below wipes it locally anyway)
   if (window.__sessionToken) {
     try { fetch(`${SUPA_URL}/rest/v1/rpc/auth_logout`, { method: 'POST', keepalive: true,
@@ -9265,7 +9298,7 @@ async function saveCompaniesEditor() {
 }
 
 // ── App Version Check ─────────────────────────────────────
-const APP_VERSION = 94; // bump on every release
+const APP_VERSION = 95; // bump on every release
 let versionOk = true;
 
 async function checkAppVersion() {
@@ -11626,6 +11659,8 @@ document.getElementById('loginBtn').addEventListener('click', doLogin);
   } catch(e) {}
 })();
 document.getElementById('forgotLink').addEventListener('click', e => { e.preventDefault(); showForgotMsg(); });
+try { const _il = Number(localStorage.getItem('amisaf_idle_logout') || 0); if (_il) localStorage.removeItem('amisaf_idle_logout'); if (_il && Date.now() - _il < 10 * 60 * 1000) {
+  const e = document.getElementById('loginError'); if (e) { e.textContent = 'נותקת אוטומטית אחרי שעה ללא פעילות. התחבר מחדש'; e.classList.add('show'); } } } catch (e) {}
 // renderAll is called after successful login
 
 // ── Auto-refresh when tab becomes visible ─────────────────────
