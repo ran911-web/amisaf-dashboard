@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://hjlgkhfrovtpmyeczzze.supabase.co; font-src 'self' data: https://cdn.jsdelivr.net; connect-src 'self' https://hjlgkhfrovtpmyeczzze.supabase.co https://api.emailjs.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://hjlgkhfrovtpmyeczzze.supabase.co; font-src 'self' data: https://cdn.jsdelivr.net; connect-src 'self' https://hjlgkhfrovtpmyeczzze.supabase.co https://api.emailjs.com; base-uri 'self'; form-action 'self'; object-src 'none'">
 <script>if (window.top !== window.self) { try { window.top.location = window.self.location; } catch (e) { document.documentElement.style.display = 'none'; } }</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <link rel="manifest" href="manifest.json">
@@ -89,6 +89,7 @@
   :root {
     --navy:   #0f1f3d;
     --blue:   #1a56db;
+    --mid-blue: #1a56db;   /* was used in 66 places but never defined */
     --blue-m: #3b82f6;
     --blue-l: #dbeafe;
     --green:  #166534;
@@ -201,6 +202,7 @@
   .kpi.k-green { border-top-color: #16a34a; }
   .kpi.k-amber { border-top-color: #d97706; }
   .kpi.k-red   { border-top-color: #dc2626; }
+  .kpi.k-slate { border-top-color: #64748b; }
   .kpi.k-navy  { border-top-color: #1f3864; }
   .kpi-label { font-size: 11px; font-weight: 600; color: #374151; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 10px; }
   .kpi.k-navy .kpi-label { color: #374151; }
@@ -210,6 +212,7 @@
   .kpi.k-green .kpi-value { color: #16a34a; }
   .kpi.k-amber .kpi-value { color: #d97706; }
   .kpi.k-red   .kpi-value { color: #dc2626; }
+  .kpi.k-slate .kpi-value { color: #334155; }
   .kpi.k-navy  .kpi-value { color: #1f3864; }
   .kpi-sub { font-size: 11px; color: #1e293b; font-weight: 600; }
   .kpi-icon {
@@ -861,6 +864,12 @@
     border-right: 5px solid var(--gray-3);
     transition: transform .15s, box-shadow .15s;
   }
+  .sig-card { display: flex; flex-direction: column; }
+  .sig-foot { margin-top: auto; padding-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .sig-foot-btn { font-family: Heebo, sans-serif; font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 8px; border: 1px solid #dbe5f5; background: white; color: var(--mid-blue); cursor: pointer; }
+  .sig-expected { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: #1d4ed8; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 99px; padding: 4px 6px 4px 10px; white-space: nowrap; }
+  .sig-expected button { border: none; background: transparent; color: #64748b; cursor: pointer; font-size: 12px; padding: 0 4px; min-height: 0; line-height: 1; }
+  .sig-expected button:hover { color: #dc2626; }
   .sig-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
   .sig-card.green  { border-right-color: #22c55e; }
   .sig-card.amber  { border-right-color: #f59e0b; }
@@ -1264,6 +1273,48 @@
     font-family: 'Heebo', sans-serif;
   }
   .qv-overlay.open .qv-panel { transform: translateX(0); }
+  .qv-panel { width: min(760px, 100vw); }
+  .qv-overlay { z-index: 1000; } .qv-panel { z-index: 1001; }   /* above the phone bottom bar and the + button */
+  .qv-name { font-size: 20px; }
+  .qv-actions { flex-direction: row; }
+  .qv-actions .qv-action-btn { flex: 1; }
+  .pp-head-meta { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:16px; }
+  .pp-chip { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:#334155; background:#f1f5f9; border-radius:99px; padding:4px 11px; }
+  .pp-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .pp-sec { border:1.5px solid #e6edf9; border-radius:13px; padding:14px 16px; background:white; min-width:0; }
+  .pp-sec:first-child { grid-column:1 / -1; }
+  .pp-sec-h { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:11px; }
+  .pp-sec-h > span { font-size:15px; font-weight:800; color:var(--navy); }
+  .pp-link { font-family:Heebo,sans-serif; font-size:12px; font-weight:700; padding:5px 11px; border-radius:8px; border:1.5px solid #c7d8f7; background:#f0f6ff; color:var(--mid-blue); cursor:pointer; margin-inline-start:6px; }
+  .pp-sig-top { display:flex; align-items:center; gap:14px; }
+  .pp-pct { font-size:30px; font-weight:800; line-height:1; }
+  .pp-bar { height:10px; background:#e8edf5; border-radius:99px; overflow:hidden; }
+  .pp-bar > div { height:100%; border-radius:99px; }
+  .pp-sub { font-size:13px; color:#475569; margin-top:6px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .pp-pill { font-size:12px; font-weight:700; padding:2px 9px; border-radius:99px; }
+  .pp-pill.ok { background:#f0fdf4; color:#15803d; } .pp-pill.no { background:#fff7ed; color:#b45309; } .pp-pill.warn { background:#fef2f2; color:#b91c1c; }
+  .pp-builds { margin-top:10px; display:flex; flex-direction:column; gap:5px; }
+  .pp-build { display:grid; grid-template-columns:1fr auto auto; gap:12px; align-items:center; font-size:13px; color:#334155; background:#f8fafc; border-radius:8px; padding:6px 10px; }
+  .pp-kvs { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px 14px; margin-top:10px; }
+  .pp-sec .pp-kvs:first-child { margin-top:0; }
+  .pp-kv span { display:block; font-size:11px; font-weight:700; color:#64748b; margin-bottom:2px; }
+  .pp-kv b { font-size:14px; font-weight:700; color:var(--navy); }
+  .pp-muted { font-size:13px; color:#94a3b8; }
+  .pp-yes { color:#15803d; font-weight:800; } .pp-nope { color:#b45309; font-weight:700; font-size:13px; }
+  .pp-list-h { font-size:12px; font-weight:700; color:#64748b; margin-top:10px; }
+  .pp-list { margin:5px 18px 0 0; padding:0; font-size:13px; color:#334155; line-height:1.6; }
+  .pp-note { font-size:13px; color:#334155; line-height:1.55; padding:7px 0; border-bottom:1px solid #f1f5f9; }
+  .pp-note:last-child { border-bottom:none; }
+  .pp-note span { font-size:11px; color:#94a3b8; margin-inline-end:8px; }
+  .pp-warn { font-size:13px; font-weight:600; color:#b91c1c; background:#fef2f2; border-radius:8px; padding:7px 10px; }
+  .data-conflict { margin:0 0 16px; padding:14px 18px; border:1.5px solid #fecaca; background:#fef2f2; border-radius:14px; }
+  .dc-title { font-size:15px; font-weight:800; color:#b91c1c; margin-bottom:9px; }
+  .dc-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:14px; color:#334155; }
+  .dc-grid span { display:block; font-size:12px; font-weight:700; color:#64748b; margin-bottom:2px; }
+  .dc-grid b { color:var(--navy); }
+  .dc-foot { margin-top:10px; font-size:13px; color:#7f1d1d; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .dc-foot button { font-family:Heebo,sans-serif; font-size:13px; font-weight:700; padding:7px 14px; border-radius:8px; border:none; background:#b91c1c; color:white; cursor:pointer; }
+  @media (max-width: 700px) { .pp-grid, .dc-grid { grid-template-columns:1fr; } .qv-actions { flex-direction:column; } }
   .qv-head {
     padding: 20px 20px 16px;
     border-bottom: 1px solid var(--gray-line);
@@ -2089,6 +2140,109 @@
     table.proj-table tfoot tr.totals td#tot-units::before{ content: 'קיימות'; }
     table.proj-table tfoot tr.totals td#tot-signed::before{ content: 'חתמו'; }
   }
+
+  .tn-kind { display: inline-flex; background: #eef2f9; border-radius: 10px; padding: 3px; gap: 3px; }
+  .tn-kind button { font-family: Heebo, sans-serif; font-size: 13px; font-weight: 700; padding: 6px 14px; border: none; border-radius: 8px;
+    background: transparent; color: #64748b; cursor: pointer; min-height: 0; }
+  .tn-kind button[aria-checked="true"] { background: white; color: var(--navy); box-shadow: 0 1px 3px rgba(15,31,61,.15); }
+
+  .bmaj-row { display:flex; flex-wrap:wrap; gap:4px; margin-top:5px; }
+  .bmaj-head { flex-basis:100%; font-size:10px; font-weight:700; color:#64748b; }
+  .bmaj { font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:99px; white-space:nowrap; }
+  .bmaj.ok { background:#f0fdf4; color:#15803d; }
+  .bmaj.no { background:#fff7ed; color:#b45309; }
+  @media (max-width: 600px) { .bmaj { font-size:12px; padding:3px 9px; } .bmaj-head { font-size:12px; } }
+
+  .ref-new-row { display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding:10px 16px; margin-bottom:6px; background:white; border:1.5px solid #e2e8f0; border-radius:11px; }
+  .ref-new-name { font-size:15px; font-weight:700; color:var(--navy); }
+  .ref-new-apt { font-size:13px; color:var(--gray-4); }
+  .ref-new-actions { margin-inline-start:auto; display:flex; gap:7px; flex-wrap:wrap; }
+  .ref-new-btn { font-family:Heebo,sans-serif; font-size:13px; font-weight:700; padding:7px 13px; border-radius:8px; border:1.5px solid #d8e0ee; background:white; color:var(--navy); cursor:pointer; text-decoration:none; white-space:nowrap; }
+  .ref-new-btn.primary { background:#eff6ff; border-color:#bfdbfe; color:#1d4ed8; }
+  /* ── tenants work screen ── */
+  .tn-toolbar { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin:0 0 12px; }
+  .tn-toolbar .ref-view { flex-wrap:wrap; }
+  .tn-toolbar .ref-view b { font-weight:800; color:#94a3b8; margin-inline-start:2px; }
+  .tn-toolbar .ref-view button[aria-checked="true"] b { color:var(--blue); }
+  .tn-tools { display:flex; gap:6px; flex-wrap:wrap; }
+  .tn-tool { font-family:Heebo,sans-serif; font-size:13px; font-weight:700; padding:7px 13px; border-radius:9px; border:1.5px solid #dbe3f0; background:white; color:#334155; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; min-height:0; white-space:nowrap; }
+  .tn-tool:hover { background:#f8faff; border-color:#94a3b8; }
+  .tn-tool.primary { background:var(--blue); border-color:var(--blue); color:white; }
+  .tn-bulk { display:flex; align-items:center; gap:10px; flex-wrap:wrap; background:#eff6ff; border:1.5px solid #bfdbfe; border-radius:12px; padding:10px 14px; margin-bottom:12px; font-size:14px; color:var(--navy); position:sticky; top:8px; z-index:5; }
+  .tn-bulk label { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:700; }
+  .tn-bulk input[type=date] { font-family:Heebo,sans-serif; font-size:13px; padding:5px 8px; border:1.5px solid #bfdbfe; border-radius:8px; }
+  .tn-map { background:white; border:1.5px solid #e2e8f0; border-radius:14px; padding:13px 16px; margin-bottom:14px; }
+  .tn-map-h { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; font-size:13px; color:var(--navy); margin-bottom:9px; }
+  .tn-legend { display:flex; gap:12px; flex-wrap:wrap; font-size:12px; color:#64748b; }
+  .tn-legend span { display:inline-flex; align-items:center; gap:5px; }
+  .tn-legend i { width:11px; height:11px; border-radius:3px; display:inline-block; }
+  .tn-legend i.half { background:linear-gradient(135deg,#22c55e 50%,#e2e8f0 50%); }
+  .tn-map-bs { display:flex; flex-wrap:wrap; gap:14px 40px; }
+  .tn-map-bn { font-size:12px; font-weight:800; color:#64748b; margin-bottom:6px; }
+  .tn-cells, .tn-floor > div { display:flex; flex-wrap:wrap; gap:5px; }
+  .tn-floor { display:flex; align-items:center; gap:9px; margin-bottom:5px; }
+  .tn-floor > span { font-size:11px; font-weight:700; color:#94a3b8; width:54px; flex-shrink:0; }
+  .tn-cell { font-family:Heebo,sans-serif; min-width:38px; height:32px; min-height:0; padding:0 6px; border-radius:7px; border:1.5px solid transparent; font-size:13px; font-weight:800; cursor:pointer; }
+  .tn-cell.st-signed { background:#dcfce7; color:#15803d; border-color:#86efac; }
+  .tn-cell.st-care   { background:#ffedd5; color:#b45309; border-color:#fdba74; }
+  .tn-cell.st-refuse { background:#fee2e2; color:#b91c1c; border-color:#fca5a5; }
+  .tn-cell.st-new    { background:#f1f5f9; color:#475569; border-color:#cbd5e1; }
+  .tn-cell.partial   { background-image:linear-gradient(135deg,#bbf7d0 50%,transparent 50%); }
+  .tn-cell:hover { filter:brightness(.96); border-color:#64748b; }
+  .tn-table { background:white; border:1.5px solid #e2e8f0; border-radius:14px; overflow:hidden; margin-bottom:14px; }
+  .tn-head, .tn-row { display:grid; grid-template-columns:74px minmax(0,2.3fr) minmax(0,1.1fr) minmax(0,.9fr) minmax(0,1.6fr) 26px; gap:10px; align-items:center; padding:9px 14px; }
+  .tn-head { background:#f8faff; border-bottom:1.5px solid #e6edf9; font-size:12px; font-weight:800; color:#64748b; }
+  .tn-apt + .tn-apt { border-top:1px solid #eef2f9; }
+  .tn-row { cursor:pointer; font-size:14px; color:#334155; }
+  .tn-row:hover { background:#fafcff; }
+  .tn-apt.open > .tn-row { background:#f4f8ff; }
+  .tn-c-apt { font-weight:800; color:var(--navy); display:flex; align-items:center; gap:7px; font-size:15px; }
+  .tn-c-apt i { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .tn-owner { display:flex; align-items:center; gap:8px; padding:2px 0; min-width:0; flex-wrap:wrap; }
+  .tn-oname { font-weight:700; color:var(--navy); overflow-wrap:anywhere; }
+  .tn-mini { font-size:11px; font-weight:700; }
+  .tn-phone { font-size:13px; color:var(--blue); text-decoration:none; direction:ltr; unicode-bidi:isolate; }
+  .tn-sign { width:24px; height:24px; min-height:0; padding:0; border-radius:50%; border:2px solid #d1d5db; background:white; color:#16a34a; font-size:13px; font-weight:800; cursor:pointer; flex-shrink:0; display:inline-flex; align-items:center; justify-content:center; line-height:1; }
+  .tn-sign.on { border-color:#22c55e; background:#f0fdf4; }
+  .tn-sign:not(.on):not(.ro):hover { border-color:#22c55e; }
+  .tn-sign.ro { cursor:default; }
+  .tn-sign.ro { display:none; }
+  body.meeting-mode .tn-sign.ro { display:inline-flex; }
+  .tn-bulk-cb { width:20px; height:20px; flex-shrink:0; cursor:pointer; accent-color:var(--blue); }
+  .tn-chip { display:inline-block; font-size:12px; font-weight:700; padding:3px 10px; border-radius:99px; margin:1px 0 1px 4px; white-space:nowrap; }
+  .tn-c-last, .tn-c-next { font-size:13px; color:#475569; overflow-wrap:anywhere; }
+  .tn-late { color:#b91c1c; font-weight:700; }
+  .tn-none { color:#94a3b8; }
+  .tn-c-chev { color:#94a3b8; font-size:13px; text-align:center; }
+  .tn-detail { padding:4px 14px 14px; background:#f4f8ff; }
+  .tn-detail-acts { display:flex; gap:7px; flex-wrap:wrap; padding:6px 0 10px; }
+  .tn-card { background:white; border:1.5px solid #e2e8f0; border-radius:12px; overflow:hidden; }
+  .tn-today { background:white; border:1.5px solid #fed7aa; border-radius:14px; padding:13px 16px; margin-bottom:18px; }
+  .tn-today-h { font-size:15px; font-weight:800; color:var(--navy); margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+  .tn-today-h span { font-size:12px; font-weight:800; background:#ffedd5; color:#c2410c; border-radius:99px; padding:2px 9px; }
+  .tn-today-row { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1.2fr) minmax(0,1.2fr) auto; gap:10px; align-items:center; padding:8px 0; border-top:1px solid #f1f5f9; font-size:14px; }
+  .tn-today-why { font-size:13px; font-weight:700; color:#b45309; overflow-wrap:anywhere; }
+  .tn-today-why.r0 { color:#b91c1c; }
+  .tn-today-why.r3 { color:#64748b; }
+  .tn-today-name { font-weight:700; color:var(--navy); overflow-wrap:anywhere; }
+  .tn-today-proj { color:#64748b; font-size:13px; overflow-wrap:anywhere; }
+  .tn-today-acts { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+  @media (max-width: 720px) {
+    .tn-head { display:none; }
+    .tn-row { grid-template-columns:58px minmax(0,1fr) 22px; grid-template-areas:"apt owners chev" "apt state chev" "last last last" "next next next"; gap:4px 9px; padding:11px 12px; }
+    .tn-c-apt { grid-area:apt; align-self:start; } .tn-c-owners { grid-area:owners; } .tn-c-state { grid-area:state; } .tn-c-chev { grid-area:chev; align-self:start; }
+    .tn-c-last { grid-area:last; } .tn-c-next { grid-area:next; }
+    .tn-c-last:empty, .tn-c-next:empty, .tn-c-last.none, .tn-c-next.none { display:none; }
+    .tn-c-last::before, .tn-c-next::before { content:attr(data-l) ": "; color:#94a3b8; font-weight:700; }
+    .tn-sign { width:30px; height:30px; } .tn-bulk-cb { width:24px; height:24px; }
+    .tn-tools { width:100%; } .tn-tool { padding:9px 12px; }
+    .tn-today-row { grid-template-columns:1fr; gap:3px; } .tn-today-acts { justify-content:flex-start; }
+    .tn-detail { padding:4px 8px 10px; }
+  }
+
+  .ref-view { display:inline-flex; background:#eef2f9; border-radius:10px; padding:3px; gap:3px; }
+  .ref-view button { font-family:Heebo,sans-serif; font-size:13px; font-weight:700; padding:5px 12px; border:none; border-radius:8px; background:transparent; color:#64748b; cursor:pointer; min-height:0; }
+  .ref-view button[aria-checked="true"] { background:white; color:var(--navy); box-shadow:0 1px 3px rgba(15,31,61,.15); }
 </style>
 </head>
 <body>
@@ -2341,27 +2495,33 @@
 <div id="tenantCallOverlay" style="display:none;position:fixed;inset:0;background:rgba(15,31,61,.6);z-index:1000;align-items:center;justify-content:center;padding:16px">
   <div style="background:white;border-radius:18px;width:min(620px,95vw);max-height:92vh;display:flex;flex-direction:column;box-shadow:0 26px 66px rgba(15,31,61,.4)">
     <div style="padding:17px 24px;background:#2563eb;display:flex;justify-content:space-between;align-items:center;border-radius:18px 18px 0 0">
-      <div style="font-size:17px;font-weight:800;color:white">📞 שיחות עם <span id="tnCallName"></span></div>
+      <div style="font-size:17px;font-weight:800;color:white">📞 שיחות ופגישות עם <span id="tnCallName"></span></div>
       <button onclick="closeTenantCall()" style="background:rgba(255,255,255,.2);border:none;width:32px;height:32px;border-radius:8px;font-size:21px;cursor:pointer;color:white">×</button>
     </div>
     <div style="padding:20px 24px;overflow-y:auto;flex:1">
       <div style="background:#f8faff;border:1.5px solid #e6edf9;border-radius:12px;padding:16px;margin-bottom:18px">
-        <div style="font-size:13px;font-weight:800;color:var(--navy);margin-bottom:12px">➕ תיעוד שיחה חדשה</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:800;color:var(--navy)">➕ תיעוד חדש</div>
+          <div role="radiogroup" aria-label="סוג התיעוד" class="tn-kind">
+            <button type="button" role="radio" id="tnKindCall" onclick="setTenantCallKind('call')">📞 שיחה</button>
+            <button type="button" role="radio" id="tnKindMeeting" onclick="setTenantCallKind('meeting')">🤝 פגישה</button>
+          </div>
+        </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
           <div>
-            <label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5px">תאריך השיחה</label>
+            <label id="tnLblDate" style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5px">תאריך השיחה</label>
             <input type="date" id="tnCallDate" style="width:100%;padding:11px 12px;border:1.5px solid #d8e0ee;border-radius:9px;font-family:Heebo,sans-serif;font-size:15px;outline:none;background:white;box-sizing:border-box">
           </div>
           <div>
-            <label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5px">מי ביצע את השיחה</label>
+            <label id="tnLblBy" style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5px">מי ביצע את השיחה</label>
             <input type="text" id="tnCallBy" placeholder="שם המטפל" style="width:100%;padding:11px 12px;border:1.5px solid #d8e0ee;border-radius:9px;font-family:Heebo,sans-serif;font-size:15px;direction:rtl;outline:none;box-sizing:border-box">
           </div>
         </div>
-        <label style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5px">מה נאמר בשיחה</label>
+        <label id="tnLblSum" style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5px">מה נאמר בשיחה</label>
         <textarea id="tnCallSummary" rows="3" placeholder="סיכום השיחה, מה סוכם, מה הצעד הבא..." style="width:100%;padding:11px 12px;border:1.5px solid #d8e0ee;border-radius:9px;font-family:Heebo,sans-serif;font-size:15px;direction:rtl;outline:none;box-sizing:border-box;resize:vertical;line-height:1.55;margin-bottom:12px"></textarea>
-        <button onclick="addTenantCall()" style="font-family:Heebo,sans-serif;font-size:14px;font-weight:700;padding:10px 22px;border-radius:9px;border:none;background:#2563eb;color:#fff;cursor:pointer">הוסף שיחה</button>
+        <button id="tnCallAddBtn" onclick="addTenantCall()" style="font-family:Heebo,sans-serif;font-size:14px;font-weight:700;padding:10px 22px;border-radius:9px;border:none;background:#2563eb;color:#fff;cursor:pointer">הוסף שיחה</button>
       </div>
-      <div style="font-size:13px;font-weight:800;color:var(--navy);margin-bottom:10px">היסטוריית שיחות</div>
+      <div style="font-size:13px;font-weight:800;color:var(--navy);margin-bottom:10px">היסטוריית שיחות ופגישות</div>
       <div id="tnCallList" style="display:flex;flex-direction:column;gap:9px"></div>
     </div>
     <div style="padding:15px 24px;border-top:1.5px solid #e6edf9;display:flex;justify-content:flex-end">
@@ -2832,7 +2992,7 @@
       <div class="kpi-value">212</div>
       <div class="kpi-sub">סה"כ בכל הפרויקטים</div>
     </div>
-    <div class="kpi k-red">
+    <div class="kpi k-slate">
       <div class="kpi-icon">🏗️</div>
       <div class="kpi-label">יחידות חדשות מתוכננות</div>
       <div class="kpi-value">494</div>
@@ -2908,7 +3068,7 @@
               <div class="donut-count">1</div>
             </div>
             <div class="donut-legend-item">
-              <div class="donut-legend-left"><div class="donut-dot" style="background:#ef4444"></div>רוב דרוש</div>
+              <div class="donut-legend-left"><div class="donut-dot" style="background:#0d9488"></div>רוב דרוש</div>
               <div class="donut-count">1</div>
             </div>
           </div>
@@ -3918,8 +4078,8 @@ const STAGES   = ['פגישות ראשוניות','פגישות אישיות','�
 const STATUSES = ['בטיוטת חוזה','בחתימות חוזה','הושלם','רוב דרוש – טיפול בסרבנים','עצור'];
 const URGENCIES= ['גבוהה','בינונית','נמוכה'];
 
-const STATUS_CFG  = {"הושלם":{cls:"green",icon:"✓"},"בטיוטת חוזה":{cls:"purple",icon:"📝"},"בחתימות חוזה":{cls:"teal",icon:"✍️"},"רוב דרוש – טיפול בסרבנים":{cls:"red",icon:"⚠️"},"עצור":{cls:"amber",icon:"⏸"}};
-const ACCENT      = {"הושלם":"#22c55e","בטיוטת חוזה":"#1a56db","בחתימות חוזה":"#7c3aed","רוב דרוש – טיפול בסרבנים":"#ef4444"};
+const STATUS_CFG  = {"הושלם":{cls:"green",icon:"✓"},"בטיוטת חוזה":{cls:"blue",icon:"📝"},"בחתימות חוזה":{cls:"purple",icon:"✍️"},"רוב דרוש – טיפול בסרבנים":{cls:"teal",icon:"🎯"},"עצור":{cls:"amber",icon:"⏸"}};
+const ACCENT      = {"הושלם":"#22c55e","בטיוטת חוזה":"#1a56db","בחתימות חוזה":"#7c3aed","רוב דרוש – טיפול בסרבנים":"#0d9488"};
 const URGENCY_CFG = {"גבוהה":{color:"#ef4444"},"בינונית":{color:"#f59e0b"},"נמוכה":{color:"#22c55e"}};
 
 function pctColor(v){ return v>=67?"pct-green":v>=50?"pct-amber":"pct-red"; }
@@ -4935,17 +5095,10 @@ async function toggleTenantSigned(tid) {
   const t = tenantsOf(p).find(x => x.id === tid);
   if (!t) return;
   if (t.signed) {
-    if (!await appConfirm(`להוריד את סימון החתימה של ${t.name}?`)) return;
+    if (!await appConfirm(`להוריד את סימון החתימה של ${t.realName || t.name}?`)) return;
   }
-  const before = JSON.parse(JSON.stringify(p.tenants));
-  t.signed = !t.signed;
-  t.signedDate = t.signed ? getTodayISO() : '';
-  t.signedBy = t.signed ? (currentUsername || '') : '';
-  renderTenants();
-  const ok = await saveProjectsToCloud();
-  if (!ok) { p.tenants = before; renderTenants(); showToast('השמירה נכשלה', 'error'); return; }
-  logActivity(p.name, 'edit', 'דייר', t.name, t.signed ? 'סומן כחתם ✓' : 'בוטל סימון חתימה');
-  await syncTenantsToProject(tenantsProjIdx);
+  const ok = await tnApplySigned([tid], !t.signed, getTodayISO());
+  if (ok) showToast(t.signed ? 'סימון החתימה בוטל' : `${t.realName || t.name} סומן כחתם ✓`);
 }
 
 // ── Sync signed tenants back into the project's signature count ──
@@ -5163,7 +5316,26 @@ async function saveTenantNote() {
   showToast('ההערה נשמרה ✓');
 }
 
-// ── Calls ──
+// ── Calls & meetings ── (stored together in t.calls; type: 'call' | 'meeting', missing = call)
+const TN_KIND = {
+  call:    { icon: '📞', noun: 'שיחה', date: 'תאריך השיחה', by: 'מי ביצע את השיחה', sum: 'מה נאמר בשיחה',
+             ph: 'סיכום השיחה, מה סוכם, מה הצעד הבא...', add: 'הוסף שיחה' },
+  meeting: { icon: '🤝', noun: 'פגישה', date: 'תאריך הפגישה', by: 'מי השתתף בפגישה', sum: 'מה סוכם בפגישה',
+             ph: 'סיכום הפגישה, מה סוכם, מה הצעד הבא...', add: 'הוסף פגישה' }
+};
+const tnKindOf = cl => (cl && cl.type === 'meeting') ? 'meeting' : 'call';
+let tenantCallKind = 'call';
+function setTenantCallKind(k) {
+  tenantCallKind = (k === 'meeting') ? 'meeting' : 'call';
+  const m = TN_KIND[tenantCallKind];
+  document.getElementById('tnKindCall').setAttribute('aria-checked', String(tenantCallKind === 'call'));
+  document.getElementById('tnKindMeeting').setAttribute('aria-checked', String(tenantCallKind === 'meeting'));
+  document.getElementById('tnLblDate').textContent = m.date;
+  document.getElementById('tnLblBy').textContent = m.by;
+  document.getElementById('tnLblSum').textContent = m.sum;
+  document.getElementById('tnCallSummary').placeholder = m.ph;
+  document.getElementById('tnCallAddBtn').textContent = m.add;
+}
 function openTenantCall(tid) {
   const t = findTenant(tid);
   if (!t) return;
@@ -5172,6 +5344,7 @@ function openTenantCall(tid) {
   document.getElementById('tnCallDate').value = getTodayISO();
   document.getElementById('tnCallBy').value = currentUsername || '';
   document.getElementById('tnCallSummary').value = '';
+  setTenantCallKind('call');
   renderTenantCalls();
   document.getElementById('tenantCallOverlay').style.display = 'flex';
   document.body.style.overflow = 'hidden';
@@ -5189,7 +5362,7 @@ function renderTenantCalls() {
   if (!box) return;
   const calls = Array.isArray(t?.calls) ? t.calls : [];
   if (!calls.length) {
-    box.innerHTML = '<div style="font-size:14px;color:#94a3b8;font-style:italic;padding:8px 2px">טרם תועדו שיחות</div>';
+    box.innerHTML = '<div style="font-size:14px;color:#94a3b8;font-style:italic;padding:8px 2px">טרם תועדו שיחות או פגישות</div>';
     return;
   }
   // Newest first — that's what you need when picking up the thread
@@ -5197,13 +5370,14 @@ function renderTenantCalls() {
   box.innerHTML = ordered.map(cl => {
     const real = calls.indexOf(cl);
     const d = cl.date ? new Date(cl.date+'T00:00:00').toLocaleDateString('he-IL') : '—';
+    const m = TN_KIND[tnKindOf(cl)];
     return `<div style="display:flex;align-items:flex-start;gap:11px;padding:12px 14px;border:1.5px solid #e6edf9;border-radius:11px;background:white">
-      <span style="font-size:17px;flex-shrink:0">📞</span>
+      <span style="font-size:17px;flex-shrink:0" title="${m.noun}">${m.icon}</span>
       <div style="flex:1;min-width:0">
-        <div style="font-size:12px;font-weight:800;color:var(--mid-blue);margin-bottom:3px">${d}${cl.by?` · 👤 ${escH(cl.by)}`:''}</div>
+        <div style="font-size:12px;font-weight:800;color:var(--mid-blue);margin-bottom:3px">${m.noun} · ${d}${cl.by?` · 👤 ${escH(cl.by)}`:''}</div>
         <div style="font-size:14px;color:var(--text);line-height:1.55">${escH(cl.summary||'')}</div>
       </div>
-      <button onclick="deleteTenantCall(${real})" aria-label="מחק שיחה" style="background:none;border:none;color:#dc2626;font-size:17px;cursor:pointer;flex-shrink:0;padding:0 3px;line-height:1">×</button>
+      <button onclick="deleteTenantCall(${real})" aria-label="מחק ${m.noun}" style="background:none;border:none;color:#dc2626;font-size:17px;cursor:pointer;flex-shrink:0;padding:0 3px;line-height:1">×</button>
     </div>`;
   }).join('');
 }
@@ -5216,11 +5390,12 @@ async function addTenantCall() {
   const by = document.getElementById('tnCallBy').value.trim();
   const summary = document.getElementById('tnCallSummary').value.trim();
   if (!date)    { showToast('יש לבחור תאריך', 'error'); return; }
-  if (!summary) { showToast('יש להזין את תוכן השיחה', 'error'); return; }
+  const kind = tenantCallKind, km = TN_KIND[kind];
+  if (!summary) { showToast(`יש להזין את תוכן ה${km.noun}`, 'error'); return; }
 
   const before = Array.isArray(t.calls) ? JSON.parse(JSON.stringify(t.calls)) : [];
   if (!Array.isArray(t.calls)) t.calls = [];
-  t.calls.push({ date, summary, by: by || (currentUsername || ''), loggedAt: getTodayISO() });
+  t.calls.push({ type: kind, date, summary, by: by || (currentUsername || ''), loggedAt: getTodayISO() });
   t.calls.sort((a,b) => (a.date||'').localeCompare(b.date||''));
 
   const ok = await saveProjectsToCloud();
@@ -5229,8 +5404,8 @@ async function addTenantCall() {
   document.getElementById('tnCallSummary').value = '';
   renderTenantCalls();
   renderTenants();
-  logActivity(p.name, 'edit', 'דייר', t.name, `שיחה תועדה: ${summary.slice(0,60)}`);
-  showToast('השיחה נשמרה ✓');
+  logActivity(p.name, 'edit', 'דייר', t.name, `${km.noun} תועדה: ${summary.slice(0,60)}`);
+  showToast(`ה${km.noun} נשמרה ✓`);
 }
 
 async function deleteTenantCall(i) {
@@ -5239,13 +5414,14 @@ async function deleteTenantCall(i) {
   if (!p || !t || !Array.isArray(t.calls)) return;
   const cl = t.calls[i];
   if (!cl) return;
-  if (!await appConfirm(`למחוק את השיחה מ-${cl.date ? new Date(cl.date+'T00:00:00').toLocaleDateString('he-IL') : ''}?\n\n${(cl.summary||'').slice(0,80)}`)) return;
+  const _kn = TN_KIND[tnKindOf(cl)].noun;
+  if (!await appConfirm(`למחוק את ה${_kn} מ-${cl.date ? new Date(cl.date+'T00:00:00').toLocaleDateString('he-IL') : ''}?\n\n${(cl.summary||'').slice(0,80)}`)) return;
   const before = JSON.parse(JSON.stringify(t.calls));
   const removed = t.calls.splice(i, 1)[0];
   renderTenantCalls();
   const ok = await saveProjectsToCloud();
   if (!ok) { t.calls = before; renderTenantCalls(); showToast('המחיקה נכשלה', 'error'); return; }
-  logActivity(p.name, 'delete', 'דייר', t.name, `שיחה נמחקה (${removed.date||''})`);
+  logActivity(p.name, 'delete', 'דייר', t.name, `${_kn} נמחקה (${removed.date||''})`);
   renderTenants();
 }
 
@@ -5432,14 +5608,15 @@ async function deleteTenantCallInline(tid, i) {
   const cl = t.calls[i];
   if (!cl) return;
   const d = cl.date ? new Date(cl.date+'T00:00:00').toLocaleDateString('he-IL') : '';
-  if (!await appConfirm(`למחוק את השיחה מ-${d}?\n\n"${(cl.summary||'').slice(0,120)}"`)) return;
+  const _kn = TN_KIND[tnKindOf(cl)].noun;
+  if (!await appConfirm(`למחוק את ה${_kn} מ-${d}?\n\n"${(cl.summary||'').slice(0,120)}"`)) return;
   const before = JSON.parse(JSON.stringify(t.calls));
   const removed = t.calls.splice(i, 1)[0];
   renderTenants();
   const ok = await saveProjectsToCloud();
   if (!ok) { t.calls = before; renderTenants(); showToast('המחיקה נכשלה', 'error'); return; }
-  logActivity(p.name, 'delete', 'דייר', t.name, `שיחה נמחקה (${removed.date||''})`);
-  showToast('השיחה נמחקה ✓');
+  logActivity(p.name, 'delete', 'דייר', t.name, `${_kn} נמחקה (${removed.date||''})`);
+  showToast(`ה${_kn} נמחקה ✓`);
 }
 
 
@@ -5558,12 +5735,34 @@ async function revokePortalAccess(id, name) {
 
 // ── Project context banner: shown whenever a single project is in focus, so
 //    it's never ambiguous whose data is on screen. ──
+// The project row says X/Y; the tenant list (tabu) may say something else. When they
+// disagree nobody can claim "majority reached" — show ONE state: data conflict.
+function tenantDataConflict(p) {
+  if (!p || !tenantsOf(p).length) return null;
+  const m = tenantMajority(p), units = Number(p.units) || 0, signed = Number(p.signed) || 0;
+  if (m.aptTotal === units && m.aptSigned === signed) return null;
+  return { units, signed, aptTotal: m.aptTotal, aptSigned: m.aptSigned, countDiffers: m.aptTotal !== units, m };
+}
+function conflictNoticeHTML(p, idx) {
+  const c = tenantDataConflict(p); if (!c) return '';
+  const need = requiredSignatures(c.aptTotal);
+  return `<div class="data-conflict">
+    <div class="dc-title">⚠ הנתונים לא תואמים — לא ניתן לקבוע אם יש רוב</div>
+    <div class="dc-grid">
+      <div><span>בנתוני הפרויקט</span><b>${c.signed} חתמו מתוך ${c.units} יחידות</b></div>
+      <div><span>ברשימת הדיירים (נסח)</span><b>${c.aptSigned} דירות חתומות מתוך ${c.aptTotal}</b> · נדרש ${need}</div>
+    </div>
+    <div class="dc-foot">${c.countDiffers ? 'מספר היחידות שונה בין שני המקורות. ' : ''}אם רשימת הדיירים היא הנכונה, לחץ כדי לעדכן את נתוני הפרויקט לפיה.
+      ${idx != null ? `<button type="button" onclick="syncTenantsToProject(${idx})" class="admin-only editor-allow">עדכן את הפרויקט לפי רשימת הדיירים (${c.aptSigned}/${c.aptTotal})</button>` : ''}</div>
+  </div>`;
+}
 function projectBanner(p, opts = {}) {
   if (!p) return '';
   const typeCol = typeColor(p.type);
   const pct = p.units ? Math.round((Number(p.signed)||0) / Number(p.units) * 100) : 0;
   const gap = majorityGap(p);
   const majority = gap === 0;
+  const conflict = tenantDataConflict(p);
   return `<div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
        margin-bottom:16px;padding:16px 22px;border-radius:14px;
        background:linear-gradient(135deg,${typeCol} 0%,${typeCol}cc 100%);color:#fff;box-shadow:0 4px 14px ${typeCol}44">
@@ -5580,8 +5779,8 @@ function projectBanner(p, opts = {}) {
         <div style="font-size:11px;opacity:.9;margin-top:2px">חתמו · ${pct}%</div>
       </div>
       <div style="text-align:center;background:${majority?'rgba(255,255,255,.28)':'rgba(255,255,255,.18)'};border-radius:11px;padding:8px 16px">
-        <div style="font-size:16px;font-weight:800;line-height:1.2">${majority ? '✓ רוב' : `חסרות ${gap}`}</div>
-        <div style="font-size:11px;opacity:.9;margin-top:2px">${majority ? 'הושג ⅔' : 'לרוב ⅔'}</div>
+        <div style="font-size:16px;font-weight:800;line-height:1.2">${conflict ? '⚠ לא ודאי' : majority ? '✓ רוב' : `חסרות ${gap}`}</div>
+        <div style="font-size:11px;opacity:.9;margin-top:2px">${conflict ? 'נתונים לא תואמים' : majority ? 'הושג ⅔' : 'לרוב ⅔'}</div>
       </div>
       ${opts.backFn ? `<button onclick="${opts.backFn}()" style="font-family:Heebo,sans-serif;font-size:13px;font-weight:700;padding:9px 14px;border-radius:9px;border:1.5px solid rgba(255,255,255,.55);background:rgba(255,255,255,.12);color:#fff;cursor:pointer;white-space:nowrap">⟶ כל הפרויקטים</button>` : ''}
     </div>
@@ -5640,7 +5839,7 @@ function renderTenants() {
     }).filter(Boolean);
 
     cont.innerHTML = cards.length
-      ? `<div style="font-size:13px;color:#64748b;margin-bottom:14px">סקירה לפי פרויקט · לחץ לפירוט</div>
+      ? `${_ovTerms.length ? '' : tnTodayListHTML()}<div style="font-size:13px;color:#64748b;margin-bottom:14px">סקירה לפי פרויקט · לחץ לפירוט</div>
          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:15px">${cards.join('')}</div>`
       : `<div style="text-align:center;padding:52px 20px">
            <div style="font-size:44px;margin-bottom:12px">👥</div>
@@ -5720,29 +5919,35 @@ function renderTenants() {
   });
   const multiBuilding = buildings.size > 1 || (buildings.size === 1 && [...buildings.keys()][0] !== '');
 
+  const _refMap = tnRefMap(p), _apts = [];
+  buildings.forEach((groups, bname) => {
+    [...groups.keys()].sort((a,b) => (parseInt(a)||9999) - (parseInt(b)||9999)).forEach(key => {
+      const owners = groups.get(key);
+      _apts.push({ k: bname + '|' + key, key, bname, owners, infos: owners.map(t => tnOwnerInfo(p, t, _refMap)) });
+    });
+  });
+  const _aptByK = new Map(_apts.map(a => [a.k, a]));
+  const _thead = `<div class="tn-head"><div>דירה</div><div>בעלים</div><div>מצב</div><div>קשר אחרון</div><div>הצעד הבא</div><div></div></div>`;
+  let _shown = 0;
   const blocks = [...buildings.entries()].map(([bname, groups]) => {
+  const _visible = [...groups.keys()].filter(key => tnAptMatches(_aptByK.get(bname + '|' + key).infos));
+  if (!_visible.length) return '';
+  _shown += _visible.length;
   const header = multiBuilding ? `<div style="display:flex;align-items:center;gap:9px;margin:18px 0 11px;padding:11px 16px;background:var(--navy);border-radius:11px">
-      <span style="font-size:15px;font-weight:800;color:white">🏢 ${escH(bname || 'ללא שיוך לבניין')}</span>
-      <span style="font-size:13px;color:rgba(255,255,255,.75)">${groups.size} דירות</span>
+      <span style="font-size:15px;font-weight:800;color:white">${escH(bname || 'ללא שיוך לבניין')}</span>
+      <span style="font-size:13px;color:rgba(255,255,255,.75)">${_visible.length === groups.size ? groups.size : _visible.length + ' מתוך ' + groups.size} דירות</span>
     </div>` : '';
-  const sortedKeys = [...groups.keys()].sort((a,b) => (parseInt(a)||9999) - (parseInt(b)||9999));
-  return header + sortedKeys.map(key => {
+  const sortedKeys = _visible.sort((a,b) => (parseInt(a)||9999) - (parseInt(b)||9999));
+  return header + `<div class="tn-table">${_thead}` + sortedKeys.map(key => {
     const owners = groups.get(key);
+    const _apt = _aptByK.get(bname + '|' + key);
+    if (!tnExpanded.has(_apt.k)) return tnRowHTML(p, idx, _apt, '');
     const all = owners.every(o => o.signed === true);
     const some = owners.some(o => o.signed === true);
     const share = Math.max(...owners.map(o => shareToFraction(o.commonShare)), 0);
     const sharePctTxt = share ? (Math.round(share * 1000) / 10) + '%' : '—';
 
-    return `<div style="background:white;border:1.5px solid ${all?'#bbf7d0':some?'#fed7aa':'#e2e8f0'};border-radius:14px;margin-bottom:13px;overflow:hidden;box-shadow:0 2px 8px rgba(15,31,61,.05)">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px;background:${all?'linear-gradient(90deg,#f0fdf4,#fff)':some?'linear-gradient(90deg,#fff7ed,#fff)':'#f8faff'};border-bottom:1.5px solid #eef2f9;flex-wrap:wrap">
-        <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap">
-          <span style="font-size:16px;font-weight:800;color:var(--navy)">דירה ${escH(key)}</span>
-          <span style="font-size:13px;color:#64748b">${owners.length} ${owners.length===1?'בעלים':'בעלים'}</span>
-          ${all?'<span style="font-size:12px;font-weight:700;padding:3px 11px;border-radius:99px;background:#f0fdf4;color:#15803d">✓ חתומה</span>'
-              :some?'<span style="font-size:12px;font-weight:700;padding:3px 11px;border-radius:99px;background:#fff7ed;color:#c2410c">⚠ חתימה חלקית</span>'
-              :'<span style="font-size:12px;font-weight:700;padding:3px 11px;border-radius:99px;background:#fef2f2;color:#dc2626">טרם חתמה</span>'}
-        </div>
-      </div>
+    return tnRowHTML(p, idx, _apt, `<div class="tn-card">
       ${(() => {
         // ── Property stats: area · floor · share of common property ──
         // The share tile is scaled against the building's average so a
@@ -5756,19 +5961,20 @@ function renderTenants() {
           low:  { bg:'linear-gradient(135deg,#f8fafc,#fff)',    bd:'#e2e8f0', fg:'#64748b', tag:'',          pill:'#94a3b8' }
         }[band];
         const barPct = maxShare > 0 ? Math.round(share / maxShare * 100) : 0;
-        const tile = (icon, val, label, extra) => `
+        if (!owners[0].area && !owners[0].floor && !share) return '';
+        const tile = (val, label, extra) => `
           <div style="flex:1;min-width:110px;background:#fff;border:1.5px solid #e6edf9;border-radius:11px;padding:11px 14px">
-            <div style="font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:3px">${icon} ${label}</div>
+            <div style="font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:3px">${label}</div>
             <div style="font-size:17px;font-weight:800;color:var(--navy);line-height:1.15">${val}</div>
             ${extra||''}
           </div>`;
         return `<div style="display:flex;gap:10px;flex-wrap:wrap;padding:12px 18px;background:#fbfcff;border-bottom:1px solid #eef2f9">
-          ${tile('📐', (owners[0].area ? escH(owners[0].area) + ' <span style=\'font-size:12px;font-weight:600;color:#64748b\'>מ"ר</span>' : '—'), 'שטח')}
-          ${tile('🏗', owners[0].floor ? escH(owners[0].floor) : '—', 'קומה')}
-          <div style="flex:1.4;min-width:180px;background:${cfg.bg};border:1.5px solid ${cfg.bd};border-radius:11px;padding:11px 14px">
+          ${owners[0].area ? tile(escH(owners[0].area) + ' <span style=\'font-size:12px;font-weight:600;color:#64748b\'>מ"ר</span>', 'שטח') : ''}
+          ${owners[0].floor ? tile(escH(owners[0].floor), 'קומה') : ''}
+          ${share ? `<div style="flex:1.4;min-width:180px;background:${cfg.bg};border:1.5px solid ${cfg.bd};border-radius:11px;padding:11px 14px">
             <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
-              <span style="font-size:11px;font-weight:700;color:${cfg.fg}">🥧 חלק ברכוש המשותף</span>
-              ${isTop?`<span style="font-size:10px;font-weight:800;background:linear-gradient(135deg,#0d9488,#14b8a6);color:#fff;padding:2px 9px;border-radius:99px;box-shadow:0 1px 3px rgba(13,148,136,.3)">⭐ הגדולה בבניין</span>`
+              <span style="font-size:11px;font-weight:700;color:${cfg.fg}">חלק ברכוש המשותף</span>
+              ${isTop?`<span style="font-size:10px;font-weight:800;background:linear-gradient(135deg,#0d9488,#14b8a6);color:#fff;padding:2px 9px;border-radius:99px">הגדולה בבניין</span>`
                 : cfg.tag?`<span style="font-size:10px;font-weight:800;background:${cfg.pill};color:#fff;padding:2px 9px;border-radius:99px">${cfg.tag}</span>`:''}
             </div>
             <div style="display:flex;align-items:baseline;gap:8px">
@@ -5779,7 +5985,7 @@ function renderTenants() {
             <div style="height:6px;background:#fff;border-radius:99px;overflow:hidden;margin-top:7px;border:1px solid ${cfg.bd}">
               <div style="height:100%;width:${barPct}%;background:linear-gradient(90deg,${cfg.pill},${cfg.fg});border-radius:99px"></div>
             </div>
-          </div>
+          </div>` : ''}
         </div>`;
       })()}
       ${owners.map(t => {
@@ -5796,56 +6002,55 @@ function renderTenants() {
                 <button onclick="openTenantAlias('${t.id}')" class="admin-only editor-allow"
                   title="${t.realName ? 'שם אמיתי: ' + escA(t.realName) + ' · לחץ לעריכה' : 'הוסף שם אמיתי (שונה מהנסח)'}"
                   aria-label="שם אמיתי"
-                  style="width:22px;height:22px;padding:0;border-radius:6px;border:1px solid ${t.realName ? '#0d9488' : '#e2e8f0'};background:${t.realName ? '#f0fdfa' : 'transparent'};color:${t.realName ? '#0d9488' : '#cbd5e1'};font-size:12px;line-height:1;cursor:pointer;flex-shrink:0">👤</button>
+                  style="width:22px;height:22px;padding:0;border-radius:6px;border:1px solid ${t.realName ? '#0d9488' : '#e2e8f0'};background:${t.realName ? '#f0fdfa' : 'transparent'};color:${t.realName ? '#0d9488' : '#cbd5e1'};font-size:12px;line-height:1;cursor:pointer;flex-shrink:0;font-family:Heebo,sans-serif;font-weight:700;width:auto;padding:0 7px">שם</button>
               </div>
               ${t.realName ? `<div style="font-size:12px;color:#94a3b8;margin-top:1px">בנסח: ${escH(t.name)}</div>` : ''}
               <div style="font-size:12px;color:#64748b">
                 ${t.idNumber?`ת.ז ${escH(t.idNumber)}`:''}${t.ownershipShare?` · חלק ${escH(t.ownershipShare)}`:''}${t.signedDate?` · חתם ${new Date(t.signedDate+'T00:00:00').toLocaleDateString('he-IL')}`:''}
               </div>
             </div>
-            ${t.notInNesach?`<span title="לא נמצא בקריאה האחרונה של הנסח — ייתכן שהזכויות הועברו" style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;background:#fff7ed;color:#c2410c">⚠️ לא בנסח העדכני</span>`:''}
+            ${t.notInNesach?`<span title="לא נמצא בקריאה האחרונה של הנסח — ייתכן שהזכויות הועברו" style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;background:#fff7ed;color:#c2410c">לא בנסח העדכני</span>`:''}
             ${blocks2.map(k => `<span title="${BLOCKER_META[k].note}" style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;background:#fef2f2;color:#dc2626">${BLOCKER_META[k].icon} ${BLOCKER_META[k].label}</span>`).join('')}
           </div>
           <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
             ${t.phone?`<a href="tel:${escH(t.phone)}" class="tn-act" style="border-color:#c7d8f7;background:#f0f6ff;color:var(--mid-blue);text-decoration:none" title="${escH(t.phone)}">חייג</a>`:''}
             ${t.email?`<a href="mailto:${escH(t.email)}" class="tn-act" style="text-decoration:none" title="${escH(t.email)}">מייל</a>`:''}
             <button onclick="openTenantNote('${t.id}')" class="tn-act admin-only editor-allow" style="${t.note?'border-color:#fbbf24;background:#fffbeb;color:#92400e':''}" title="${t.note?escA(t.note.slice(0,80)):'הוסף הערה'}">הערה${t.note?' ●':''}</button>
-            <button onclick="openTenantCall('${t.id}')" class="tn-act admin-only editor-allow" style="${(t.calls&&t.calls.length)?'border-color:#93c5fd;background:#eff6ff;color:#1a56db':''}" title="תעד שיחה">שיחה${(t.calls&&t.calls.length)?` ${t.calls.length}`:''}</button>
+            <button onclick="openTenantCall('${t.id}')" class="tn-act admin-only editor-allow" style="${(t.calls&&t.calls.length)?'border-color:#93c5fd;background:#eff6ff;color:#1a56db':''}" title="תיעוד שיחה או פגישה">שיחה/פגישה${(t.calls&&t.calls.length)?` ${t.calls.length}`:''}</button>
             <button onclick="openTenantModal('${t.id}')" class="tn-act admin-only editor-allow" title="עריכת כל הפרטים">עריכה</button>
             <button onclick="deleteTenant('${t.id}')" class="tn-act admin-only editor-allow" style="border-color:#fecaca;background:#fef2f2;color:#dc2626" title="מחיקת הדייר">מחק</button>
           </div>
         </div>
         ${t.note ? `<div style="margin:0 18px 10px;padding:11px 14px;background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;display:flex;align-items:flex-start;gap:9px">
-          <span style="flex-shrink:0;font-size:12px;font-weight:800;color:#92400e;background:#fde68a;border-radius:6px;padding:3px 9px;line-height:1.3">📝 הערה</span>
+          <span style="flex-shrink:0;font-size:12px;font-weight:800;color:#92400e;background:#fde68a;border-radius:6px;padding:3px 9px;line-height:1.3">הערה</span>
           <div style="flex:1;min-width:0;font-size:14px;color:#78350f;line-height:1.6;white-space:pre-wrap;padding-top:2px">${escH(t.note)}</div>
           <button onclick="deleteTenantNote('${t.id}')" class="admin-only editor-allow" title="מחק הערה"
-            style="flex-shrink:0;background:#fef2f2;border:1.5px solid #fecaca;border-radius:7px;color:#dc2626;font-family:Heebo,sans-serif;font-size:12px;font-weight:600;cursor:pointer;padding:4px 9px;line-height:1.3">🗑 מחק</button>
+            style="flex-shrink:0;background:#fef2f2;border:1.5px solid #fecaca;border-radius:7px;color:#dc2626;font-family:Heebo,sans-serif;font-size:12px;font-weight:600;cursor:pointer;padding:4px 9px;line-height:1.3">מחק</button>
         </div>` : ''}
         ${tCalls.length ? `<div style="margin:0 18px 10px;padding:11px 14px;background:#f8faff;border:1.5px solid #e0eaff;border-radius:10px">
-          <div style="font-size:12px;font-weight:800;color:var(--mid-blue);margin-bottom:7px">📞 שיחות (${tCalls.length})</div>
+          <div style="font-size:12px;font-weight:800;color:var(--mid-blue);margin-bottom:7px">שיחות ופגישות (${tCalls.length})</div>
           ${tCalls.slice(0,4).map(cl => {
             const ci = t.calls.indexOf(cl);
             return `<div style="display:flex;align-items:flex-start;gap:9px;padding:4px 0;border-top:${tCalls.indexOf(cl)?'1px solid #eef2f9':'none'}">
+              <span style="font-size:14px;flex-shrink:0" title="${TN_KIND[tnKindOf(cl)].noun}">${TN_KIND[tnKindOf(cl)].icon}</span>
               <span style="font-size:12px;font-weight:700;color:#64748b;flex-shrink:0;min-width:72px">${cl.date?new Date(cl.date+'T00:00:00').toLocaleDateString('he-IL'):'—'}</span>
               <span style="flex:1;min-width:0;font-size:14px;color:#334155;line-height:1.55">${escH(cl.summary||'')}</span>
-              ${cl.by?`<span style="font-size:12px;color:#94a3b8;flex-shrink:0">👤 ${escH(cl.by)}</span>`:''}
-              <button onclick="deleteTenantCallInline('${t.id}',${ci})" class="admin-only editor-allow" title="מחק שיחה"
+              ${cl.by?`<span style="font-size:12px;color:#94a3b8;flex-shrink:0">${escH(cl.by)}</span>`:''}
+              <button onclick="deleteTenantCallInline('${t.id}',${ci})" class="admin-only editor-allow" title="מחק ${TN_KIND[tnKindOf(cl)].noun}"
                 style="flex-shrink:0;background:#fef2f2;border:1.5px solid #fecaca;border-radius:6px;color:#dc2626;font-family:Heebo,sans-serif;font-size:11px;font-weight:600;cursor:pointer;padding:3px 8px;line-height:1.3">🗑</button>
             </div>`;
           }).join('')}
-          ${tCalls.length>4?`<div style="font-size:11px;color:#94a3b8;margin-top:5px">ועוד ${tCalls.length-4} שיחות — לחץ 📞 לצפייה</div>`:''}
+          ${tCalls.length>4?`<div style="font-size:11px;color:#94a3b8;margin-top:5px">ועוד ${tCalls.length-4} — לחץ "שיחה/פגישה" לצפייה בכולן</div>`:''}
         </div>` : ''}
         </div>`;
       }).join('')}
-      ${owners[0].attachments?`<div style="padding:8px 18px;background:#f8faff;font-size:13px;color:#334155;border-top:1px solid #eef2f9">🔗 <b>הצמדות:</b> ${escH(owners[0].attachments)}</div>`:''}
-      ${owners[0].extras?`<div style="padding:8px 18px;background:#f0fdfa;font-size:13px;color:#115e59;border-top:1px solid #eef2f9">➕ <b>שטחים נוספים:</b> ${escH(owners[0].extras)}</div>`:''}
-      ${owners[0].leases?`<div style="padding:8px 18px;background:#f5f3ff;font-size:13px;color:#5b21b6;border-top:1px solid #eef2f9">🔑 <b>חכירות:</b> ${escH(owners[0].leases)}</div>`:''}
-      ${owners[0].mortgage?`<div style="padding:8px 18px;background:#fffbeb;font-size:13px;color:#92400e;border-top:1px solid #eef2f9">🏦 <b>משכנתא:</b> ${escH(owners[0].mortgage)}</div>`:''}
-      ${owners[0].tabuNotes?`<div style="padding:8px 18px;background:#fef2f2;font-size:13px;color:#991b1b;border-top:1px solid #eef2f9;line-height:1.55">📋 <b>הערות מהנסח:</b> ${escH(owners[0].tabuNotes)}</div>`:''}
-
-
-    </div>`;
-  }).join('');
+      ${owners[0].attachments?`<div style="padding:8px 18px;background:#f8faff;font-size:13px;color:#334155;border-top:1px solid #eef2f9"><b>הצמדות:</b> ${escH(owners[0].attachments)}</div>`:''}
+      ${owners[0].extras?`<div style="padding:8px 18px;background:#f0fdfa;font-size:13px;color:#115e59;border-top:1px solid #eef2f9"><b>שטחים נוספים:</b> ${escH(owners[0].extras)}</div>`:''}
+      ${owners[0].leases?`<div style="padding:8px 18px;background:#f5f3ff;font-size:13px;color:#5b21b6;border-top:1px solid #eef2f9"><b>חכירות:</b> ${escH(owners[0].leases)}</div>`:''}
+      ${owners[0].mortgage?`<div style="padding:8px 18px;background:#fffbeb;font-size:13px;color:#92400e;border-top:1px solid #eef2f9"><b>משכנתא:</b> ${escH(owners[0].mortgage)}</div>`:''}
+      ${owners[0].tabuNotes?`<div style="padding:8px 18px;background:#fef2f2;font-size:13px;color:#991b1b;border-top:1px solid #eef2f9;line-height:1.55"><b>הערות מהנסח:</b> ${escH(owners[0].tabuNotes)}</div>`:''}
+    </div>`);
+  }).join('') + `</div>`;
   }).join('');
 
   // ── Imports list, each removable as a whole ──
@@ -5885,11 +6090,305 @@ function renderTenants() {
   ).join('');
   const syncBtn = `<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
     ${viewBtns}
-    <button onclick="syncTenantsToProject(${idx})" class="admin-only editor-allow" style="font-family:Heebo,sans-serif;font-size:13px;font-weight:700;padding:9px 18px;border-radius:9px;border:1.5px solid #c7d8f7;background:#f0f6ff;color:var(--mid-blue);cursor:pointer">🔄 סנכרן לנתוני הפרויקט (${m.aptSigned}/${m.aptTotal})</button>
   </div>`;
 
-  cont.innerHTML = projectBanner(p, { label: 'דיירים ובעלי זכויות', backFn: 'clearTenantsFilter' }) + kpis + tabu + syncBtn + blocks;
+  // toolbar counts and the map always describe the whole project, not the search / filter
+  const _allApts = _tenTerms.length ? (() => { const g = new Map();
+      _allList.forEach(t => { const k = String(t.building || '') + '|' + (String(t.subParcel || '').trim() || '—'); if (!g.has(k)) g.set(k, []); g.get(k).push(t); });
+      return [...g.entries()].map(([k, owners]) => ({ k, key: k.split('|')[1], bname: k.split('|')[0], owners, infos: owners.map(t => tnOwnerInfo(p, t, _refMap)) }))
+        .sort((a, b) => a.bname.localeCompare(b.bname) || (parseInt(a.key) || 9999) - (parseInt(b.key) || 9999)); })() : _apts;
+  const _empty = _shown ? '' : `<div class="tn-none" style="text-align:center;padding:34px 16px;background:white;border-radius:14px;font-size:14px">אין דירות בסינון הזה · <button type="button" class="tn-tool" onclick="setTnFilter('all')">הצג הכל</button></div>`;
+  cont.innerHTML = projectBanner(p, { label: 'דיירים ובעלי זכויות', backFn: 'clearTenantsFilter' }) + conflictNoticeHTML(p, idx) + kpis
+    + tnToolbarHTML(p, idx, _allApts) + tnMapHTML(_allApts) + blocks + _empty + tabu + syncBtn;
 }
+
+// ══════════ Tenants work screen: table, filters, map, bulk signing, Excel ══════════
+let tnFilter = 'all', tnBulk = false, tnShowMap = true;
+const tnExpanded = new Set(), tnBulkSel = new Set();
+const TN_STATE = {
+  signed: { label: 'חתם',        fg: '#15803d', bg: '#f0fdf4', dot: '#22c55e' },
+  care:   { label: 'בטיפול',     fg: '#b45309', bg: '#fff7ed', dot: '#f59e0b' },
+  refuse: { label: 'מסרב',       fg: '#b91c1c', bg: '#fef2f2', dot: '#ef4444' },
+  new:    { label: 'טרם פנינו',  fg: '#475569', bg: '#f1f5f9', dot: '#cbd5e1' }
+};
+function tnRefMap(p) {
+  const m = new Map();
+  effectiveRefusers(p).forEach((r, i) => { if (r.tenantKey) m.set(r.tenantKey, { r, i }); });
+  return m;
+}
+// One owner's working state, last contact (tenant log + handling log) and next step
+function tnOwnerInfo(p, t, refMap) {
+  const e = refMap.get(tenantRefKey(t)), r = e ? e.r : null;
+  const dates = [];
+  (Array.isArray(t.calls) ? t.calls : []).forEach(c => { if (c && c.date) dates.push(c.date); });
+  if (r) { refuserEvents(r).forEach(ev => { if (ev.date) dates.push(ev.date); }); if (r.lastCall) dates.push(r.lastCall); }
+  let state = 'new';
+  if (t.signed === true) state = 'signed';
+  else if (r && (r.resistance === 'קשה' || r.status === 'בטיפול משפטי' || r.legalStage)) state = 'refuse';
+  else if (r && refuserInCare(p, r)) state = 'care';
+  return { state, last: dates.sort().pop() || '', next: (r && r.nextAction) || '', nextDate: (r && r.nextActionDate) || '', ri: e ? e.i : -1 };
+}
+function tnAptState(infos) {
+  if (infos.every(i => i.state === 'signed')) return 'signed';
+  const open = infos.filter(i => i.state !== 'signed').map(i => i.state);
+  return open.includes('refuse') ? 'refuse' : open.includes('care') ? 'care' : 'new';
+}
+function tnAptMatches(infos) {
+  const st = tnAptState(infos);
+  if (tnFilter === 'all') return true;
+  if (tnFilter === 'signed') return st === 'signed';
+  if (tnFilter === 'open') return st !== 'signed';
+  return infos.some(i => i.state === tnFilter);
+}
+function setTnFilter(f) { tnFilter = f; renderTenants(); }
+function tnToggleApt(k) { if (tnExpanded.has(k)) tnExpanded.delete(k); else tnExpanded.add(k); renderTenants(); }
+function tnOpenApt(k) {
+  tnFilter = 'all'; tnExpanded.add(k); renderTenants();
+  const el = [...document.querySelectorAll('[data-apt]')].find(x => x.dataset.apt === k);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+function tnToggleMap() { tnShowMap = !tnShowMap; renderTenants(); }
+function tnBulkMode(on) { tnBulk = on; tnBulkSel.clear(); renderTenants(); }
+function tnBulkToggle(tid) { if (tnBulkSel.has(tid)) tnBulkSel.delete(tid); else tnBulkSel.add(tid); renderTenants(); }
+function tnBulkSelectAll() {
+  const p = projects[tenantsProjIdx];
+  tenantsOf(p).filter(t => t.signed !== true).forEach(t => tnBulkSel.add(t.id));
+  renderTenants();
+}
+function tnDaysAgo(iso) { return iso ? Math.floor((new Date(getTodayISO() + 'T00:00:00') - new Date(iso + 'T00:00:00')) / 86400000) : null; }
+
+// The single place that marks owners signed / unsigned. If the project numbers agreed with the
+// tenant list before the change, they keep following it in the same save — no second prompt.
+async function tnApplySigned(ids, signed, dateISO) {
+  const p0 = projects[tenantsProjIdx]; if (!p0 || !ids.length) return false;
+  const pid = p0.projectId, wasSync = !tenantDataConflict(p0), reachedBefore = majorityInfo(p0).reached;
+  const cand = JSON.parse(JSON.stringify(projects));
+  const cp = cand.find(x => x.projectId === pid); if (!cp) return false;
+  const names = [];
+  tenantsOf(cp).forEach(t => {
+    if (!ids.includes(t.id)) return;
+    t.signed = signed; t.signedDate = signed ? (dateISO || getTodayISO()) : ''; t.signedBy = signed ? (currentUsername || '') : '';
+    names.push(t.realName || t.name);
+  });
+  if (wasSync) {
+    const m = tenantMajority(cp);
+    if ((Number(cp.signed) || 0) !== m.aptSigned) {
+      cp.signed = m.aptSigned;
+      if (!Array.isArray(cp.sigHistory)) cp.sigHistory = [];
+      cp.sigHistory.push({ date: new Date().toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+        signed: m.aptSigned, units: Number(cp.units) || m.aptTotal, by: currentUsername || '', note: 'עודכן אוטומטית מרשימת הדיירים' });
+    }
+  }
+  const res = await saveProjectsToCloudEx({ data: cand });
+  if (res.status !== 'success') {
+    if (res.status !== 'conflict') showToast(res.status === 'blocked' ? 'המערכת בטעינה — נסה שוב בעוד רגע' : 'השמירה נכשלה — לא בוצע שינוי', 'error');
+    renderTenants(); return false;
+  }
+  const p = projects.find(x => x.projectId === pid);
+  logActivity(p.name, 'edit', 'דייר', names.length === 1 ? names[0] : `${names.length} בעלים`, signed ? 'סומן כחתם ✓' : 'בוטל סימון חתימה');
+  if (!reachedBefore && majorityInfo(p).reached && typeof notifyMajorityReached === 'function') notifyMajorityReached(p);
+  renderTenants(); try { renderAll(); } catch (e) {}
+  return true;
+}
+async function tnBulkApply() {
+  const ids = [...tnBulkSel]; if (!ids.length) { showToast('לא נבחרו בעלים', 'error'); return; }
+  const date = document.getElementById('tnBulkDate').value || getTodayISO();
+  if (!await appConfirm(`לסמן ${ids.length} בעלים כחתמו בתאריך ${heShortDate(date)}?`)) return;
+  if (await tnApplySigned(ids, true, date)) { tnBulk = false; tnBulkSel.clear(); renderTenants(); showToast(`${ids.length} בעלים סומנו כחתמו ✓`); }
+}
+function heShortDate(iso) { return iso ? new Date(String(iso).slice(0, 10) + 'T00:00:00').toLocaleDateString('he-IL') : ''; }
+
+// ── toolbar + map + header (above the table) ──
+function tnToolbarHTML(p, idx, apts) {
+  const count = f => { const keep = tnFilter; tnFilter = f; const n = apts.filter(a => tnAptMatches(a.infos)).length; tnFilter = keep; return n; };
+  const chip = (f, label) => `<button type="button" role="radio" aria-checked="${tnFilter === f}" onclick="setTnFilter('${f}')">${label} <b>${count(f)}</b></button>`;
+  const bulkBar = tnBulk ? `<div class="tn-bulk">
+      <span><b>${tnBulkSel.size}</b> נבחרו</span>
+      <button type="button" class="tn-tool" onclick="tnBulkSelectAll()">בחר את כל מי שלא חתם</button>
+      <label>תאריך חתימה <input type="date" id="tnBulkDate" value="${getTodayISO()}"></label>
+      <button type="button" class="tn-tool primary" onclick="tnBulkApply()">סמן כחתמו</button>
+      <button type="button" class="tn-tool" onclick="tnBulkMode(false)">ביטול</button>
+    </div>` : '';
+  return `<div class="tn-toolbar">
+      <div class="ref-view" role="radiogroup" aria-label="סינון דירות">
+        ${chip('all', 'הכל')}${chip('signed', 'חתמו')}${chip('open', 'לא חתמו')}${chip('care', 'בטיפול')}${chip('new', 'טרם פנינו')}${chip('refuse', 'מסרבים')}
+      </div>
+      <div class="tn-tools">
+        <button type="button" class="tn-tool admin-only editor-allow" onclick="tnBulkMode(${!tnBulk})">${tnBulk ? 'סגור סימון מרובה' : 'סימון חתימות מרובה'}</button>
+        <button type="button" class="tn-tool" onclick="tnToggleMap()">${tnShowMap ? 'הסתר מפה' : 'מפת בניין'}</button>
+        <button type="button" class="tn-tool" onclick="exportTenantsExcel(${idx})">ייצוא לאקסל</button>
+        <button type="button" class="tn-tool admin-only editor-allow" onclick="document.getElementById('tnImportFile').click()">ייבוא טלפונים</button>
+        <button type="button" class="tn-tool" onclick="ppGo('refusers',${idx})">טיפול מפורט</button>
+        <input type="file" id="tnImportFile" accept=".xlsx,.csv" style="display:none" onchange="importTenantContacts(${idx}, this)">
+      </div>
+    </div>${bulkBar}`;
+}
+function tnMapHTML(apts) {
+  if (!tnShowMap || apts.length < 2) return '';
+  const byB = new Map();
+  apts.forEach(a => { if (!byB.has(a.bname)) byB.set(a.bname, []); byB.get(a.bname).push(a); });
+  const cell = a => { const st = tnAptState(a.infos), partial = st !== 'signed' && a.infos.some(i => i.state === 'signed');
+    return `<button type="button" class="tn-cell st-${st}${partial ? ' partial' : ''}" data-k="${escH(a.k)}" onclick="tnOpenApt(this.dataset.k)" title="דירה ${escA(a.key)} · ${TN_STATE[st].label}${partial ? ' · חתימה חלקית' : ''} · ${escA(a.owners.map(o => o.realName || o.name).join(', '))}">${escH(a.key)}</button>`; };
+  const blocks = [...byB.entries()].map(([bname, list]) => {
+    const withFloor = list.filter(a => String(a.owners[0].floor || '').trim() !== '');
+    let body;
+    if (withFloor.length >= list.length * 0.6) {           // real floors known → draw the building
+      const floors = new Map();
+      list.forEach(a => { const f = String(a.owners[0].floor || '').trim() || '?'; if (!floors.has(f)) floors.set(f, []); floors.get(f).push(a); });
+      const ord = [...floors.keys()].sort((x, y) => (parseFloat(y) || -99) - (parseFloat(x) || -99));
+      body = ord.map(f => `<div class="tn-floor"><span>קומה ${escH(f)}</span><div>${floors.get(f).map(cell).join('')}</div></div>`).join('');
+    } else body = `<div class="tn-cells">${list.map(cell).join('')}</div>`;
+    return `<div class="tn-map-b">${bname ? `<div class="tn-map-bn">${escH(bname)}</div>` : ''}${body}</div>`;
+  }).join('');
+  const lg = s => `<span><i style="background:${TN_STATE[s].dot}"></i>${TN_STATE[s].label}</span>`;
+  return `<div class="tn-map"><div class="tn-map-h"><b>מפת הדירות</b><div class="tn-legend">${lg('signed')}${lg('care')}${lg('refuse')}${lg('new')}<span><i class="half"></i>חתימה חלקית</span></div></div><div class="tn-map-bs">${blocks}</div></div>`;
+}
+function tnRowHTML(p, idx, a, detail) {
+  const st = tnAptState(a.infos), S = TN_STATE[st], open = tnExpanded.has(a.k);
+  const partial = st !== 'signed' && a.infos.some(i => i.state === 'signed');
+  const lastAll = a.infos.map(i => i.last).filter(Boolean).sort().pop() || '';
+  const days = tnDaysAgo(lastAll);
+  const nx = a.infos.filter(i => i.state !== 'signed' && i.next).sort((x, y) => String(x.nextDate || '9').localeCompare(String(y.nextDate || '9')))[0];
+  const nxLate = nx && nx.nextDate && nx.nextDate < getTodayISO();
+  const owners = a.owners.map((t, j) => {
+    const inf = a.infos[j];
+    const ctl = tnBulk
+      ? (t.signed === true ? `<span class="tn-sign on" aria-hidden="true">✓</span>`
+          : `<input type="checkbox" class="tn-bulk-cb" ${tnBulkSel.has(t.id) ? 'checked' : ''} onclick="event.stopPropagation();tnBulkToggle('${t.id}')" aria-label="בחר את ${escA(t.realName || t.name)}">`)
+      : `<span class="tn-sign ro ${t.signed === true ? 'on' : ''}" role="img" aria-label="${t.signed ? 'חתם' : 'טרם חתם'}" title="${t.signed ? 'חתם' + (t.signedDate ? ' · ' + heShortDate(t.signedDate) : '') : 'טרם חתם'}">${t.signed === true ? '✓' : ''}</span><button type="button" class="tn-sign ${t.signed === true ? 'on' : ''} admin-only editor-allow" onclick="event.stopPropagation();toggleTenantSigned('${t.id}')" title="${t.signed ? 'חתם — לחץ לביטול' : 'סמן כחתם'}" aria-label="${t.signed ? 'חתם' : 'סמן כחתם'}: ${escA(t.realName || t.name)}">${t.signed === true ? '✓' : ''}</button>`;
+    return `<div class="tn-owner">${ctl}<span class="tn-oname">${escH(t.realName || t.name)}</span>
+      ${a.owners.length > 1 && inf.state !== 'signed' && inf.state !== st ? `<span class="tn-mini" style="color:${TN_STATE[inf.state].fg}">${TN_STATE[inf.state].label}</span>` : ''}
+      ${t.phone ? `<a class="tn-phone" href="tel:${escH(t.phone)}" onclick="event.stopPropagation()">${escH(t.phone)}</a>` : ''}</div>`;
+  }).join('');
+  return `<div class="tn-apt${open ? ' open' : ''}" data-apt="${escH(a.k)}">
+    <div class="tn-row" onclick="tnToggleApt(this.parentNode.dataset.apt)" role="button" tabindex="0" aria-expanded="${open}" onkeydown="if(event.key==='Enter'){tnToggleApt(this.parentNode.dataset.apt)}">
+      <div class="tn-c-apt"><i style="background:${S.dot}"></i>${escH(a.key)}</div>
+      <div class="tn-c-owners">${owners}</div>
+      <div class="tn-c-state"><span class="tn-chip" style="background:${S.bg};color:${S.fg}">${S.label}</span>${partial ? `<span class="tn-chip" style="background:#fff7ed;color:#c2410c">חתימה חלקית</span>` : ''}</div>
+      <div class="tn-c-last${lastAll ? '' : ' none'}" data-l="קשר אחרון">${st === 'signed' ? '' : lastAll ? `${heShortDate(lastAll)}${days > 30 ? ` <span class="tn-late">${days} ימים</span>` : ''}` : '<span class="tn-none">—</span>'}</div>
+      <div class="tn-c-next${nx ? '' : ' none'}" data-l="הצעד הבא">${nx ? `<span class="${nxLate ? 'tn-late' : ''}">${escH(nx.next)}${nx.nextDate ? ` · ${heShortDate(nx.nextDate)}` : ''}</span>` : (st === 'signed' ? '' : '<span class="tn-none">—</span>')}</div>
+      <div class="tn-c-chev" aria-hidden="true">${open ? '▴' : '▾'}</div>
+    </div>
+    ${open ? `<div class="tn-detail">
+      ${a.infos.some(i => i.ri >= 0) ? `<div class="tn-detail-acts">${a.owners.map((t, j) => a.infos[j].ri >= 0 ? `
+          <button type="button" class="tn-tool primary admin-only editor-allow" onclick="quickLogCall(${idx},${a.infos[j].ri})">תעד פנייה${a.owners.length > 1 ? ' — ' + escH(t.realName || t.name) : ''}</button>
+          <button type="button" class="tn-tool admin-only editor-allow" onclick="openRefuserModal(${idx},${a.infos[j].ri})">סטטוס טיפול וצעד הבא${a.owners.length > 1 ? ' — ' + escH(t.realName || t.name) : ''}</button>` : '').join('')}</div>` : ''}
+      ${detail}</div>` : ''}
+  </div>`;
+}
+
+// ── "את מי להשיג היום" — across all projects ──
+function tnTodayListHTML() {
+  const today = getTodayISO(), rows = [];
+  projects.forEach((p, pi) => {
+    const tl = tenantsOf(p);
+    effectiveRefusers(p).forEach((r, ri) => {
+      if (r.status === 'חתם ✓' || !refuserInCare(p, r)) return;
+      const t = r.tenantKey ? tl.find(x => tenantRefKey(x) === r.tenantKey) : null;
+      const dates = refuserEvents(r).map(e => e.date).filter(Boolean); if (r.lastCall) dates.push(r.lastCall);
+      if (t && Array.isArray(t.calls)) t.calls.forEach(c => c && c.date && dates.push(c.date));
+      const last = dates.sort().pop() || '', days = tnDaysAgo(last);
+      let why = '', rank = 9;
+      if (r.nextActionDate && r.nextActionDate <= today) { why = `${r.nextActionDate < today ? 'באיחור' : 'להיום'}: ${r.nextAction || 'צעד הבא'}`; rank = r.nextActionDate < today ? 0 : 1; }
+      else if (days !== null && days > 30) { why = `אין קשר ${days} ימים`; rank = 2; }
+      else if (!r.nextAction) { why = 'בטיפול, לא הוגדר צעד הבא'; rank = 3; }
+      if (!why) return;
+      rows.push({ rank, pi, ri, p, r, why, last });
+    });
+  });
+  if (!rows.length) return '';
+  rows.sort((a, b) => a.rank - b.rank || String(a.last).localeCompare(String(b.last)));
+  return `<div class="tn-today"><div class="tn-today-h">את מי להשיג היום <span>${rows.length}</span></div>
+    ${rows.slice(0, 12).map(x => `<div class="tn-today-row">
+      <span class="tn-today-why r${x.rank}">${escH(x.why)}</span>
+      <span class="tn-today-name">${escH(x.r.name)}${x.r.apt ? ` · ${escH(x.r.apt)}` : ''}</span>
+      <span class="tn-today-proj">${escH(x.p.name)}</span>
+      <span class="tn-today-acts">${x.r.phone ? `<a class="tn-tool" href="tel:${escH(x.r.phone)}">${escH(x.r.phone)}</a>` : ''}
+        <button type="button" class="tn-tool primary admin-only editor-allow" onclick="quickLogCall(${x.pi},${x.ri})">תעד פנייה</button>
+        <button type="button" class="tn-tool" onclick="ppGo('${tenantsOf(x.p).length ? 'tenants' : 'refusers'}',${x.pi})">פתח</button></span>
+    </div>`).join('')}
+    ${rows.length > 12 ? `<div class="tn-none" style="padding:8px 4px">ועוד ${rows.length - 12}</div>` : ''}</div>`;
+}
+
+// ── Excel: export the list, import phones / e-mails ──
+async function loadExcelJS() {
+  if (window.ExcelJS) return;
+  await new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js';
+    s.integrity = 'sha384-P7KKlGD3Ng66Ds7oTliLzTnol6DbK+k7PafNYXIBDQ4b5eFWtmqctplDVOxslglR';
+    s.crossOrigin = 'anonymous'; s.referrerPolicy = 'no-referrer';
+    s.onload = res; s.onerror = rej; document.head.appendChild(s);
+  });
+}
+async function exportTenantsExcel(idx) {
+  const p = projects[idx]; if (!p) return;
+  try {
+    await loadExcelJS();
+    const wb = new ExcelJS.Workbook(), ws = wb.addWorksheet('דיירים', { views: [{ rightToLeft: true, state: 'frozen', ySplit: 1 }] });
+    ws.columns = [['בניין', 14], ['דירה', 8], ['שם', 26], ['שם בנסח', 26], ['ת.ז', 13], ['טלפון', 14], ['מייל', 26], ['חתם', 8], ['תאריך חתימה', 13],
+                  ['מצב', 12], ['קשר אחרון', 13], ['הצעד הבא', 30], ['הערה', 40]].map(([header, width]) => ({ header, width }));
+    const refMap = tnRefMap(p);
+    [...tenantsOf(p)].sort((a, b) => String(a.building || '').localeCompare(String(b.building || '')) || (parseInt(a.subParcel) || 9999) - (parseInt(b.subParcel) || 9999))
+      .forEach(t => { const i = tnOwnerInfo(p, t, refMap);
+        ws.addRow([t.building || '', t.subParcel || '', t.realName || t.name || '', t.realName ? t.name : '', t.idNumber || '', t.phone || '', t.email || '',
+                   t.signed === true ? 'כן' : 'לא', t.signedDate ? heShortDate(t.signedDate) : '', TN_STATE[i.state].label, i.last ? heShortDate(i.last) : '',
+                   i.next ? i.next + (i.nextDate ? ' · ' + heShortDate(i.nextDate) : '') : '', t.note || '']); });
+    ws.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    ws.getRow(1).eachCell(c => { c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1F3864' } }; });
+    const buf = await wb.xlsx.writeBuffer();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+    a.download = `דיירים - ${p.name} - ${getTodayISO()}.xlsx`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  } catch (e) { showToast('הייצוא נכשל', 'error'); }
+}
+const tnDigits = v => String(v == null ? '' : v).replace(/\D/g, '').replace(/^0+/, '');
+const tnNorm = v => String(v == null ? '' : v).replace(/["'״׳.\-]/g, '').replace(/\s+/g, ' ').trim();
+// Updates phone / e-mail only, only where the file has a value, matched by ID number
+// (or by apartment + name). Nothing else in the list is touched; shows a summary before saving.
+async function importTenantContacts(idx, input) {
+  const file = input.files && input.files[0]; input.value = '';
+  const p0 = projects[idx]; if (!file || !p0) return;
+  try {
+    let rows = [];
+    if (/\.csv$/i.test(file.name)) {
+      const txt = (await file.text()).replace(/^﻿/, '');
+      rows = txt.split(/\r?\n/).filter(l => l.trim()).map(l => l.split(/[,;\t]/).map(c => c.replace(/^"|"$/g, '').trim()));
+    } else {
+      await loadExcelJS();
+      const wb = new ExcelJS.Workbook(); await wb.xlsx.load(await file.arrayBuffer());
+      const ws = wb.worksheets[0];
+      ws.eachRow(r => { const vals = []; for (let c = 1; c <= ws.columnCount; c++) { const v = r.getCell(c).value;
+        vals.push(v == null ? '' : typeof v === 'object' ? String(v.text || v.result || (v.richText ? v.richText.map(x => x.text).join('') : '') || '') : String(v)); } rows.push(vals); });
+    }
+    if (rows.length < 2) { showToast('הקובץ ריק', 'error'); return; }
+    const head = rows[0].map(tnNorm), col = re => head.findIndex(h => re.test(h));
+    const cId = col(/תז|תעודת זהות|זהות|^id$/i), cPhone = col(/טלפון|נייד|phone/i), cMail = col(/מייל|דואל|email|mail/i), cApt = col(/^דירה|תת חלקה/), cName = col(/^שם$|^שם /);
+    if (cPhone < 0 && cMail < 0) { showToast('לא נמצאה עמודת "טלפון" או "מייל" בשורת הכותרת', 'error'); return; }
+    if (cId < 0 && (cApt < 0 || cName < 0)) { showToast('נדרשת עמודת "ת.ז", או עמודות "דירה" ו"שם", כדי לזהות את הדיירים', 'error'); return; }
+    const cand = JSON.parse(JSON.stringify(projects)), cp = cand.find(x => x.projectId === p0.projectId);
+    let upd = 0, same = 0; const missing = [];
+    rows.slice(1).forEach(r => {
+      const phone = cPhone >= 0 ? String(r[cPhone] || '').trim() : '', mail = cMail >= 0 ? String(r[cMail] || '').trim() : '';
+      if (!phone && !mail) return;
+      const id = cId >= 0 ? tnDigits(r[cId]) : '';
+      let hits = id ? tenantsOf(cp).filter(t => tnDigits(t.idNumber) === id) : [];
+      if (!hits.length && cApt >= 0 && cName >= 0) hits = tenantsOf(cp).filter(t => tnNorm(t.subParcel) === tnNorm(r[cApt]) && [tnNorm(t.name), tnNorm(t.realName)].includes(tnNorm(r[cName])));
+      if (!hits.length) { missing.push(String(r[cName >= 0 ? cName : cId] || '').slice(0, 30)); return; }
+      hits.forEach(t => { let ch = false;
+        if (phone && phone !== (t.phone || '')) { t.phone = phone.slice(0, 40); ch = true; }
+        if (mail && mail !== (t.email || '')) { t.email = mail.slice(0, 120); ch = true; }
+        if (ch) upd++; else same++; });
+    });
+    if (!upd) { await appAlert(`אין מה לעדכן.\n${same ? `${same} דיירים כבר מעודכנים. ` : ''}${missing.length ? `${missing.length} שורות לא זוהו.` : ''}`); return; }
+    if (!await appConfirm(`לעדכן פרטי קשר של ${upd} בעלים?\n\n${same ? `${same} כבר מעודכנים.\n` : ''}${missing.length ? `${missing.length} שורות לא זוהו ולא יעודכנו${missing.length <= 8 ? ': ' + missing.join(', ') : ''}.\n` : ''}\nרק טלפון ומייל משתנים.`)) return;
+    const res = await saveProjectsToCloudEx({ data: cand });
+    if (res.status !== 'success') { if (res.status !== 'conflict') showToast('הייבוא לא נשמר', 'error'); return; }
+    logActivity(p0.name, 'edit', 'דיירים', `${upd} בעלים`, 'ייבוא טלפונים ומיילים מקובץ');
+    renderTenants(); showToast(`פרטי הקשר של ${upd} בעלים עודכנו ✓`);
+  } catch (e) { showToast('לא ניתן לקרוא את הקובץ', 'error'); }
+}
+
 
 function renderAll() {
   renderKPIs();
@@ -5939,7 +6438,7 @@ function renderKPIs() {
     </div>`;
   document.querySelector('.kpi.k-blue  .kpi-value').textContent = units.toLocaleString('he-IL');
   document.querySelector('.kpi.k-blue  .kpi-sub').textContent   = `סה"כ בכל הפרויקטים`;
-  document.querySelector('.kpi.k-red   .kpi-value').textContent = newU.toLocaleString('he-IL');
+  document.querySelector('.kpi.k-slate .kpi-value').textContent = newU.toLocaleString('he-IL');
   document.querySelector('.kpi.k-green .kpi-value').textContent = signed.toLocaleString('he-IL');
   document.querySelector('.kpi.k-green .kpi-sub').textContent   = `מתוך ${units.toLocaleString('he-IL')} יחידות קיימות`;
   document.querySelector('.kpi.k-amber .kpi-value').textContent = pctAvg+'%';
@@ -5981,7 +6480,7 @@ function renderDonut() {
   projects.forEach(p => { if(counts[p.status]!==undefined) counts[p.status]++; });
   const total = projects.length || 1;
   const C = 364.4; // circumference at r=58
-  const colors = ['#1a56db','#7c3aed','#22c55e','#ef4444'];
+  const colors = ['#1a56db','#7c3aed','#22c55e','#0d9488'];
   const keys = ['בטיוטת חוזה','בחתימות חוזה','הושלם','רוב דרוש – טיפול בסרבנים'];
   let offset = 91.1;
   const arcs = keys.map((k,i) => {
@@ -6052,13 +6551,12 @@ function buildProjectRow(p) {
     <td class="c-pct"><div class="pct-cell">
       <span class="pct-num pct-${majorityTier(p)}">${pct}%</span>
       <div class="pct-bar"><div class="pct-bar-fill" style="width:${pct}%;background:${TIER_BAR[majorityTier(p)]}"></div></div>
-    </div>${(()=>{ const m = majorityInfo(p); return (m.pending.length && m.projectGap === 0)
-      ? `<div style="font-size:10px;font-weight:700;color:#b45309;margin-top:2px" title="${escH(pendingBuildingsText(m))}">⚠ אין ⅔ בכל הבניינים</div>` : ''; })()}</td>
+    </div>${buildingMajorityChips(p)}${tenantDataConflict(p) ? `<div class="bmaj-row"><span class="bmaj no" title="מספרי הפרויקט שונים מרשימת הדיירים — פתח את לשונית הדיירים">⚠ לא תואם לרשימת הדיירים</span></div>` : ''}</td>
     <td class="c-target" data-label="יעד לחתימה" style="font-size:11px;color:var(--text-2);white-space:nowrap;text-align:center">${
       TARGET_NOT_RELEVANT.includes(p.status) ? '<span style="color:var(--gray-4)">—</span>' :
       (p.target && !/^\s*(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{4}-\d{2}-\d{2}|\d{1,2}[\/.\-]\d{4}|Q[1-4]\s*\d{4}|רבעון.*)\s*$/i.test(String(p.target)))
         ? `<span style="color:#b45309" title="ערך לא תקין — צפוי תאריך. ניתן לתקן בעריכה">⚠ ${escH(p.target)}</span>`
-        : escH(p.target)}</td>
+        : targetCellHTML(p.target)}</td>
     <td class="c-status"><span class="badge ${sc.cls}">${sc.icon} ${p.status}</span></td>
     <td class="c-owner" data-label="אחראי" style="font-size:12px;font-weight:500;text-align:center">${escH(p.owner)}</td>
     <td class="notes-cell c-notes">${notesHTML}</td>
@@ -7191,7 +7689,9 @@ function migrateNotes(projectsList) {
         note: String(t.note || ''),
         calls: (Array.isArray(t.calls) ? t.calls : []).filter(x => x && typeof x === 'object').map(x => ({
           date: String(x.date || ''), summary: String(x.summary || ''),
-          by: String(x.by || ''), loggedAt: String(x.loggedAt || '')
+          by: String(x.by || ''), loggedAt: String(x.loggedAt || ''),
+          ...(x.type === 'meeting' ? { type: 'meeting' } : {}),
+          ...(x.viaPortal === true ? { viaPortal: true } : {})
         })),
         blockers: (t.blockers && typeof t.blockers === 'object') ? t.blockers : {}
       })),
@@ -7664,20 +8164,11 @@ function renderSigGrid() {
       <div class="sig-threshold">${(()=>{ const m = majorityInfo(p);
         if (!m.multi) return `סף ⅔: ${requiredSignatures(p)} חתימות נדרשות`;
         return m.pending.length ? `נדרש ⅔ בכל בניין · <b style="color:#b45309">${escH(pendingBuildingsText(m))}</b>` : 'רוב ⅔ בכל הבניינים ✓'; })()}</div>
-      <button onclick="event.stopPropagation();openSigHistory(${projects.indexOf(p)})" class="admin-only editor-allow" style="margin-top:10px;font-family:Heebo,sans-serif;font-size:12px;font-weight:700;padding:6px 12px;border-radius:8px;border:1px solid #dbe5f5;background:white;color:var(--mid-blue);cursor:pointer">✍️ עדכון חתימות</button>
-      ${(()=>{
-        const hasAll = majorityInfo(p).reached;
-        const pidx = projects.indexOf(p);
-        if (!expectedDate || hasAll) return '';
-        return `<div style="margin-top:12px">
-            <div style="font-size:9px;font-weight:700;color:#64748b;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px;text-align:center">📅 צפי רוב דרוש</div>
-            <div style="background:#dbeafe;border:2px solid #3b82f6;border-radius:10px;padding:10px 14px;text-align:center">
-              <div style="font-size:18px;font-weight:800;color:#1a56db">${expectedDate}</div>
-            </div>
-            <button onclick="event.stopPropagation();clearExpectedDate(${pidx})" class="admin-only" style="font-family:Heebo,sans-serif;font-size:11px;font-weight:600;background:#fee2e2;color:#dc2626;border:1px solid #fecaca;border-radius:6px;padding:4px 12px;cursor:pointer;width:100%;margin-top:6px">🗑 מחק צפי</button>
-          </div>`;
-      })()}
-
+      <div class="sig-foot">
+        <button type="button" onclick="event.stopPropagation();openSigHistory(${projects.indexOf(p)})" class="sig-foot-btn admin-only editor-allow">✍️ עדכון חתימות</button>
+        ${(expectedDate && !majorityInfo(p).reached) ? `<span class="sig-expected" title="צפי רוב דרוש">📅 צפי רוב: <b>${escH(expectedDate)}</b>
+          <button type="button" onclick="event.stopPropagation();clearExpectedDate(${projects.indexOf(p)})" class="admin-only" aria-label="מחק צפי" title="מחק צפי">✕</button></span>` : ''}
+      </div>
     </div>`;
   }).join('');
 }
@@ -7801,7 +8292,7 @@ async function exportToExcel() {
       'הושלם':                        {bg:'FFE2EFDA', fg:'FF2E7D32', border:'FF70AD47'},
       'בחתימות חוזה':                  {bg:'FFEBF3FB', fg:'FF2E75B6', border:'FF2E75B6'},
       'בטיוטת חוזה':                   {bg:'FFEBF3FB', fg:'FF2E75B6', border:'FF2E75B6'},
-      'רוב דרוש – טיפול בסרבנים':    {bg:'FFFFEBEE', fg:'FFC00000', border:'FFC00000'},
+      'רוב דרוש – טיפול בסרבנים':    {bg:'FFE0F2F1', fg:'FF00695C', border:'FF00695C'},
     };
     const urgencyColors = { 'גבוהה':'FFC00000', 'בינונית':'FFED7D31', 'נמוכה':'FF70AD47' };
 
@@ -8218,6 +8709,90 @@ async function _saveNegotiationsCritical() {
 }
 
 
+// ── Project page: everything about one project in one place ──
+function ppGo(tab, idx) {
+  closeQV();
+  mobileNavTo(tab, null);
+  if (tab === 'tenants')  { const e = document.getElementById('tenantsProjectFilter');  renderTenants();  if (e) { e.value = String(idx); renderTenants(); } }
+  if (tab === 'refusers') { renderRefusers(); focusRefuserProject(idx); }
+  if (tab === 'negotiation') { const e = document.getElementById('negSearch'); if (e) { e.value = projects[idx].name; } renderNegGrid(); }
+  if (tab === 'signatures') { renderSigGrid(); }
+  if (tab === 'companies') { const e = document.getElementById('companiesSearch'); if (e) { e.value = projects[idx].name; } renderCompanies(); }
+  window.scrollTo({ top: 0 });
+}
+function projectPageHTML(p, idx) {
+  const m = majorityInfo(p), sc = STATUS_CFG[p.status] || { cls: 'blue', icon: '' };
+  const tier = majorityTier(p);
+  const conflict = tenantDataConflict(p);
+  const sec = (title, body, btn) => `<section class="pp-sec"><div class="pp-sec-h"><span>${title}</span><div>${btn || ''}</div></div>${body}</section>`;
+  const link = (label, js, cls) => `<button type="button" class="pp-link ${cls || ''}" onclick="${js}">${label}</button>`;
+  const kv = (k, v) => `<div class="pp-kv"><span>${k}</span><b>${v}</b></div>`;
+  const dash = '<span class="pp-muted">—</span>';
+
+  // signatures
+  const bs = (Array.isArray(p.buildings) ? p.buildings : []).filter(b => Number(b.units) > 0);
+  const maj = conflict ? `<span class="pp-pill warn">⚠ נתונים לא תואמים</span>`
+            : m.reached ? `<span class="pp-pill ok">✓ יש רוב ⅔</span>`
+            : m.gap != null ? `<span class="pp-pill no">חסרות ${m.gap} חתימות לרוב</span>` : '';
+  const hist = (Array.isArray(p.sigHistory) ? p.sigHistory : []).slice(-3).reverse();
+  const sigBody = `
+    <div class="pp-sig-top"><div class="pp-pct pct-${tier}">${m.pct}%</div>
+      <div style="flex:1;min-width:0"><div class="pp-bar"><div style="width:${m.pct}%;background:${TIER_BAR[tier]}"></div></div>
+        <div class="pp-sub">${m.signed} חתמו מתוך ${m.units} יחידות ${maj}</div></div></div>
+    ${bs.length > 1 ? `<div class="pp-builds">${bs.map(b => { const need = requiredSignatures(b.units), got = Number(b.signed) || 0, ok = got >= need;
+        return `<div class="pp-build"><span>${escH(b.name || 'בניין')}</span><span>${got}/${b.units}</span><span class="bmaj ${ok ? 'ok' : 'no'}">${ok ? '✓ ברוב' : `חסרות ${need - got}`}</span></div>`; }).join('')}</div>` : ''}
+    <div class="pp-kvs">
+      ${TARGET_NOT_RELEVANT.includes(p.status) ? '' : kv('יעד לחתימה', p.target ? targetCellHTML(p.target) : dash)}
+      ${(p.expectedMajorityDate || '').trim() && !m.reached ? kv('צפי רוב', escH(p.expectedMajorityDate)) : ''}
+      ${hist.length ? kv('עדכון אחרון', escH(hist[0].date || '') + (hist[0].note ? ' · ' + escH(String(hist[0].note).slice(0, 80)) : '')) : ''}
+    </div>`;
+
+  // negotiation
+  const n = (typeof negotiations !== 'undefined' && Array.isArray(negotiations)) ? negotiations.find(x => x.projectId === p.projectId && !x.archived) : null;
+  const tickets = n && Array.isArray(n.bigTickets) ? n.bigTickets.filter(t => t && !t.done && !t.closed) : [];
+  const negBody = n ? `<div class="pp-kvs">
+      ${kv('טיוטה', n.noDraftSent ? 'טרם יצאה טיוטה' : `מס' ${escH(String(n.draftNum || 1))}`)}
+      ${n.lawyerYazam ? kv('עו"ד יזם', escH(n.lawyerYazam)) : ''}${n.lawyerDayarim ? kv('עו"ד דיירים', escH(n.lawyerDayarim)) : ''}
+      ${n.estDraftEnd ? kv('סיום טיוטה (תחזית)', escH(n.estDraftEnd)) : ''}${n.estSignStart ? kv('תחילת חתימות (תחזית)', escH(n.estSignStart)) : ''}
+    </div>${tickets.length ? `<div class="pp-list-h">סוגיות פתוחות (${tickets.length})</div><ul class="pp-list">${tickets.slice(0, 5).map(t => `<li>${escH(t.text || '')}</li>`).join('')}</ul>` : '<div class="pp-muted" style="margin-top:6px">אין סוגיות פתוחות</div>'}`
+    : `<div class="pp-muted">הפרויקט אינו במו"מ פעיל</div>`;
+
+  // company
+  const yes = v => v ? '<span class="pp-yes">✓</span>' : '<span class="pp-nope">חסר</span>';
+  const docsN = (Array.isArray(p.companyDocs) ? p.companyDocs.length : 0);
+  const compBody = `<div class="pp-kvs">
+      ${kv('חברת פרויקט', p.companyName ? escH(p.companyName) : '<span class="pp-nope">טרם נפתחה</span>')}
+      ${p.companyId ? kv('ח.פ.', escH(p.companyId)) : ''}
+      ${kv('חותמת', yes(p.hasStamp))}${kv('חשבון בנק', yes(p.hasBankAccount))}${kv('הסכם מייסדים', yes(p.hasFoundersAgreement))}
+      ${kv('אחוז אחזקה', (p.ownershipPct || 100) + '%')}
+    </div>`;
+
+  // tenants
+  const tl = tenantsOf(p), refs = effectiveRefusers(p).filter(r => r.status !== 'חתם ✓');
+  const care = refs.filter(r => refuserInCare(p, r)).length;
+  const tenBody = tl.length ? `${conflict ? `<div class="pp-warn">בפרויקט רשומות ${conflict.units} יחידות, ברשימת הדיירים ${conflict.aptTotal} דירות (${conflict.aptSigned} חתומות).</div>` : ''}
+      <div class="pp-kvs">${kv('בעלי זכויות', tl.length)}${kv('חתמו', tl.filter(t => t.signed === true).length)}${kv('בטיפול', care)}${kv('טרם פנינו', refs.length - care)}</div>`
+    : (refs.length ? `<div class="pp-kvs">${kv('דיירים שטרם חתמו (ידני)', refs.length)}${kv('בטיפול', care)}</div>` : `<div class="pp-muted">לא הועלה נסח ולא הוזנו דיירים</div>`);
+
+  // notes
+  const notes = (Array.isArray(p.notes) ? p.notes : []).slice(-3).reverse();
+  const notesBody = notes.length ? notes.map(x => `<div class="pp-note">${noteDate(x) ? `<span>${escH(noteDate(x))}</span>` : ''}${escH(noteText(x))}</div>`).join('') : `<div class="pp-muted">אין הערות</div>`;
+
+  return `<div class="pp-head-meta">
+      <span class="badge ${sc.cls}">${sc.icon} ${escH(p.status || '')}</span>
+      <span class="pp-chip">${typeDot(p.type)} ${escH(p.type || '')}</span>
+      ${p.owner ? `<span class="pp-chip">אחראי: ${escH(p.owner)}</span>` : ''}
+      <span class="pp-chip">${Number(p.units) || 0} יח' קיימות · ${escH(String(p.newUnits || 0))} חדשות</span>
+    </div>
+    <div class="pp-grid">
+      ${sec('חתימות', sigBody, link('עדכון חתימות', `closeQV();openSigHistory(${idx})`, 'admin-only editor-allow') + (bs.length ? link('בניינים', `closeQV();openBuildingsModal(${idx})`) : ''))}
+      ${sec('מו"מ על החוזה', negBody, n ? link('למסך המו"מ', `ppGo('negotiation',${idx})`) : '')}
+      ${sec('דיירים', tenBody, link('רשימת דיירים', `ppGo('tenants',${idx})`) + (refs.length ? link('שטרם חתמו', `ppGo('refusers',${idx})`) : ''))}
+      ${sec('חברת פרויקט', compBody, link(`מסמכים${docsN ? ` (${docsN})` : ''}`, `closeQV();openCompanyDocs(${idx})`))}
+      ${sec('הערות אחרונות', notesBody, link('כל ההערות', `closeQV();openNotesPanel(${idx})`))}
+    </div>`;
+}
+
 // ── Project Quick-View ────────────────────────────────────────
 function openProjectQuickView(idx) {
   const p = projects[idx];
@@ -8230,24 +8805,10 @@ function openProjectQuickView(idx) {
   const pctColor = ({green:'var(--green)',amber:'var(--amber)',red:'var(--red)'})[majorityTier(p)];
   const STATUS_LABELS = {
     'הושלם':'✔ הושלם','בטיוטת חוזה':'📝 בטיוטת חוזה',
-    'בחתימות חוזה':'✍️ בחתימות חוזה','רוב דרוש – טיפול בסרבנים':'⚠️ רוב דרוש'
+    'בחתימות חוזה':'✍️ בחתימות חוזה','רוב דרוש – טיפול בסרבנים':'🎯 רוב דרוש'
   };
 
-  document.getElementById('qvBody').innerHTML = `
-    <div class="qv-field"><label>סוג פרויקט</label><div class="qv-field-val">${escH(p.type)}</div></div>
-    <div class="qv-field"><label>סטטוס</label><div class="qv-field-val">${STATUS_LABELS[p.status]||p.status}</div></div>
-    <div class="qv-field"><label>שלב מו"מ</label><div class="qv-field-val">${escH(p.stage)}</div></div>
-    <hr class="qv-divider">
-    <div class="qv-field"><label>יחידות קיימות</label><div class="qv-field-val">${p.units}</div></div>
-    <div class="qv-field"><label>יחידות חדשות</label><div class="qv-field-val">${p.newUnits||0}</div></div>
-    <div class="qv-field"><label>חתמו</label>
-      <div class="qv-field-val" style="color:${pctColor};font-size:18px;font-weight:800">${p.signed} <span style="font-size:13px;font-weight:500;color:var(--gray-4)">מתוך ${p.units} (${pct}%)</span></div>
-    </div>
-    <div class="qv-field"><label>יעד לחתימה</label><div class="qv-field-val">${escH(p.target)||'—'}</div></div>
-    <div class="qv-field"><label>אחראי</label><div class="qv-field-val">${escH(p.owner)}</div></div>
-    <div class="qv-field"><label>אחוז אחזקה</label><div class="qv-field-val" style="font-weight:700;color:#7c3aed">${p.ownershipPct||100}%</div></div>
-    ${p.notes&&p.notes.length?`<hr class="qv-divider"><div class="qv-field"><label>הערה אחרונה</label><div class="qv-field-val" style="font-size:12px;color:var(--text-2)">${escH(noteText(p.notes[p.notes.length-1]))}</div></div>`:''}
-  `;
+  document.getElementById('qvBody').innerHTML = projectPageHTML(p, idx);
 
   // Wire log button with project name
   const logBtn = document.getElementById('qvLogBtn');
@@ -9298,7 +9859,7 @@ async function saveCompaniesEditor() {
 }
 
 // ── App Version Check ─────────────────────────────────────
-const APP_VERSION = 95; // bump on every release
+const APP_VERSION = 102; // bump on every release
 let versionOk = true;
 
 async function checkAppVersion() {
@@ -10160,6 +10721,35 @@ const TIER_BAR = { green:'#22c55e', amber:'#f59e0b', red:'#ef4444' };
 const TIER_TXT = { green:'#15803d', amber:'#92400e', red:'#dc2626' };
 function pendingBuildingsText(m) {
   return m.pending.map(b => `${b.name || 'בניין'}: חסרות ${b.gap}`).join(' · ');
+}
+// Per-building majority, spelled out: "✓ 84 ברוב" / "✗ 82 · חסרות 2".
+// The % above stays cumulative (all buildings together); this line says which building is
+// in and which is not, so a 72% total is never read as a majority everywhere.
+// A signing target whose date has passed is shown in red, so stale targets stand out.
+function targetPassedDate(target) {
+  const t = String(target || '').trim(); let m, d = null;
+  if ((m = t.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})$/))) d = new Date(Number(m[3].length === 2 ? '20' + m[3] : m[3]), Number(m[2]) - 1, Number(m[1]), 23, 59, 59);
+  else if ((m = t.match(/^(\d{4})-(\d{2})-(\d{2})$/))) d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 23, 59, 59);
+  else if ((m = t.match(/^(\d{1,2})[\/.\-](\d{4})$/))) d = new Date(Number(m[2]), Number(m[1]), 0, 23, 59, 59);   // end of that month
+  return (d && !isNaN(d) && d < new Date()) ? d : null;
+}
+function targetCellHTML(target) {
+  const d = targetPassedDate(target);
+  if (!d) return escH(target);
+  const months = Math.max(0, Math.floor((Date.now() - d.getTime()) / (30.44 * 86400000)));
+  const ago = months >= 1 ? `לפני ${months === 1 ? 'חודש' : months + ' חודשים'}` : 'החודש';
+  return `<span style="color:#b91c1c;font-weight:700" title="תאריך היעד עבר ${ago} — כדאי לעדכן">⏰ ${escH(target)}</span><div style="font-size:10px;color:#b91c1c;font-weight:600">היעד עבר</div>`;
+}
+function buildingMajorityChips(p) {
+  const bs = (Array.isArray(p?.buildings) ? p.buildings : []).filter(b => Number(b.units) > 0);
+  if (bs.length < 2) return '';
+  const m = majorityInfo(p);
+  const chips = bs.map(b => {
+    const need = requiredSignatures(b.units), got = Number(b.signed) || 0, ok = got >= need;
+    return `<span class="bmaj ${ok ? 'ok' : 'no'}" title="${escH(b.name || '')}: ${got} מתוך ${b.units} · נדרש ${need}">${ok ? '✓' : '✗'} ${escH(b.name || 'בניין')} · ${ok ? 'ברוב' : `חסרות ${need - got}`}</span>`;
+  }).join('');
+  const head = m.reached ? '' : `<span class="bmaj-head">${m.pct}% מצטבר — ⅔ נדרש בכל בניין בנפרד</span>`;
+  return `<div class="bmaj-row">${head}${chips}</div>`;
 }
 function majorityGap(project) {
   return majorityInfo(project).gap;
@@ -11254,6 +11844,23 @@ function tenantRefKey(t) { return 'tenant:' + t.id; }
 
 // Returns the non-signer list for a project: manually-added ones, plus the
 // unsigned tenants, merged with any existing record for that tenant.
+// "בטיפול" = somebody already did something with this owner (a call, a status, a reason,
+// a note, a next step, a letter…). Everyone else on the unsigned list is "טרם פנינו" —
+// they are not refusers, nobody has approached them yet.
+function refuserInCare(p, r) {
+  if (!r || r.status === 'חתם ✓') return false;
+  if (r.status && r.status !== 'טרם טופל') return true;
+  if (refuserEvents(r).length || r.lastCall || r.reason || r.note || r.nextAction || r.assignee ||
+      r.letterSent || r.legalStage || r.resistance) return true;
+  if (r.tenantKey) {
+    const t = tenantsOf(p).find(x => tenantRefKey(x) === r.tenantKey);
+    if (t && ((Array.isArray(t.calls) && t.calls.length) || t.note)) return true;
+  }
+  return false;
+}
+let refusersView = 'all';   // all | care | new
+function setRefusersView(v) { refusersView = v; renderRefusers(); }
+
 function effectiveRefusers(p) {
   const manual = (Array.isArray(p.refusers) ? p.refusers : []);
   const tenants = tenantsOf(p);
@@ -11305,14 +11912,16 @@ function renderRefusersSummary(today, todayISO) {
     const inLegal  = activeRefs.filter(r => r.legalStage || r.status === 'בטיפול משפטי').length;
     const lettersSent = refs.filter(r => r.letterSent).length;
     const overdue  = activeRefs.filter(r => r.nextActionDate && r.nextActionDate < todayISO).length;
-    const noAction = activeRefs.filter(r => !r.nextAction).length;
+    const careRefs = activeRefs.filter(r => refuserInCare(p, r));
+    const notYet = activeRefs.length - careRefs.length;
+    const noAction = careRefs.filter(r => !r.nextAction).length;   // only owners already in care need a next step
 
     // Staleness: refusers with no contact in 30+ days
     const contactDate = r => {
       const evs = refuserEvents(r).filter(e => e.type !== 'status');   // status changes aren't contact
       return r.lastCall || (evs.length ? evs.map(e=>e.date).sort().pop() : '');
     };
-    const noContactCount = activeRefs.filter(r => !contactDate(r)).length;
+    const noContactCount = careRefs.filter(r => !contactDate(r)).length;
     const staleCount = activeRefs.filter(r => {
       const last = contactDate(r);
       if (!last) return false;   // counted separately as "טרם נוצר קשר"
@@ -11348,17 +11957,19 @@ function renderRefusersSummary(today, todayISO) {
         <div style="display:flex;gap:7px;flex-wrap:wrap">
           ${critical ? chip(`🔥 חוסמים את הרוב — חסרים ${gap}`, '#dc2626', 'white') : ''}
           ${staleCount ? chip(`⚠️ ${staleCount} ללא מענה 30+ יום`, '#fef2f2', '#dc2626') : ''}
-          ${noContactCount ? chip(`◷ ${noContactCount} טרם נוצר קשר`, '#f1f5f9', '#475569') : ''}
+          ${noContactCount ? chip(`◷ ${noContactCount} בטיפול, ללא שיחה מתועדת`, '#f1f5f9', '#475569') : ''}
           ${overdue ? chip(`🔴 ${overdue} פעולות באיחור`, '#fff7ed', '#c2410c') : ''}
           ${noAction ? chip(`${noAction} ללא פעולה הבאה`, '#fffbeb', '#92400e') : ''}
           ${inLegal ? chip(`⚖️ ${inLegal} בהליך משפטי`, '#ede9fe', '#6d28d9') : ''}
-          ${!critical && !staleCount && !overdue && !noAction && !noContactCount ? chip('✓ הכל מטופל', '#f0fdf4', '#15803d') : ''}
+          ${lettersSent ? chip(`✉ ${lettersSent} מכתבים נשלחו`, '#eff6ff', '#1d4ed8') : ''}
+          ${!critical && !staleCount && !overdue && !noAction && !noContactCount && careRefs.length ? chip('✓ הכל מטופל', '#f0fdf4', '#15803d') : ''}
+          ${!careRefs.length && notYet ? chip('טרם התחיל טיפול', '#f1f5f9', '#475569') : ''}
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:6px 8px;border-bottom:1px solid #f1f5f9">
-        ${stat(activeRefs.length, 'פעילים', activeRefs.length ? '#dc2626' : 'var(--gray-4)')}
+        ${stat(careRefs.length, 'בטיפול', careRefs.length ? '#dc2626' : 'var(--gray-4)')}
+        ${stat(notYet, 'טרם פנינו', notYet ? '#475569' : 'var(--gray-4)')}
         ${stat(signedRefs.length, 'חתמו', signedRefs.length ? '#15803d' : 'var(--gray-4)')}
-        ${stat(lettersSent, 'מכתבים', lettersSent ? 'var(--mid-blue)' : 'var(--gray-4)')}
         ${stat(refs.length, 'סה"כ', 'var(--navy)')}
       </div>
       <div style="padding:11px 18px;display:flex;align-items:center;justify-content:space-between;background:#fbfcff">
@@ -11407,6 +12018,8 @@ function renderRefusers() {
   let allR = [];
   projects.forEach((p,pi) => effectiveRefusers(p).forEach((r,ri)=>allR.push({...r, pi, ri, projName:p.name})));
   const active = allR.filter(r=>r.status!=='חתם ✓');
+  const inCareAll = active.filter(r => refuserInCare(projects[r.pi], r));
+  const notYetAll = active.length - inCareAll.length;
   const signedAfter = allR.filter(r=>r.status==='חתם ✓');
   const convPct = allR.length ? Math.round(signedAfter.length/allR.length*100) : 0;
   const durs = signedAfter.filter(r=>r.createdAt&&r.signedAt).map(r=>Math.round((new Date(r.signedAt)-new Date(r.createdAt))/86400000)).filter(d=>d>=0);
@@ -11422,7 +12035,8 @@ function renderRefusers() {
     </div>`;
   }
   const kpisHtml = `<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px">
-    ${kpiBox(active.length,'דיירים פעילים','#dc2626','')}
+    ${kpiBox(inCareAll.length,'בטיפול','#dc2626','דיירים שכבר פנינו אליהם')}
+    ${kpiBox(notYetAll,'טרם פנינו','#64748b','בעלים שלא חתמו ועוד לא טופלו')}
     ${kpiBox(signedAfter.length,'חתמו לאחר טיפול','#15803d', allR.length?convPct+'% אחוז המרה':'')}
     ${kpiBox(avgDays!==null?avgDays:'—','ממוצע ימים עד חתימה','#7c3aed', durs.length?durs.length+' מקרים':'אין נתונים')}
     ${kpiBox(inLegal,'בהליך משפטי','#6d28d9','')}
@@ -11434,6 +12048,13 @@ function renderRefusers() {
   const blocks = summaryMode ? renderRefusersSummary(today, todayISO) : (projects.map((p, pi) => {
     if (pi !== filterIdx) return '';
     let refs = effectiveRefusers(p);
+    const _allRefs = refs;                               // positions the row buttons refer to
+    const _careSet = new Set(refs.filter(r => refuserInCare(p, r)));
+    const _newSet  = new Set(refs.filter(r => r.status !== 'חתם ✓' && !_careSet.has(r)));
+    if (refusersView === 'care') refs = refs.filter(r => !_newSet.has(r));
+    if (refusersView === 'new')  refs = refs.filter(r => _newSet.has(r));
+    // in care first, then signed, then the not-yet-approached list
+    refs = refs.filter(r => _careSet.has(r)).concat(refs.filter(r => !_careSet.has(r) && !_newSet.has(r)), refs.filter(r => _newSet.has(r)));
     const _refTerms = searchTerms('refusersSearch');
     if (_refTerms.length) {
       refs = refs.filter(r => matchesSearch(_refTerms,
@@ -11452,7 +12073,24 @@ function renderRefusers() {
     const unitsMismatch = !!(_tm && _tm.aptTotal > 0 && Number(p.units) > 0 && _tm.aptTotal !== Number(p.units));
     const unitPct = (p.units && !unitsMismatch) ? (100/p.units).toFixed(1) : null;
 
-    const rows = refs.length ? refs.map((r, ri) => {
+    let _newHeadDone = false;
+    const rows = refs.length ? refs.map((r) => {
+      const ri = _allRefs.indexOf(r);
+      if (_newSet.has(r)) {
+        const head = _newHeadDone ? '' : `<div style="display:flex;align-items:center;gap:9px;margin:${_careSet.size ? '26px' : '4px'} 0 10px">
+            <span style="width:4px;height:16px;border-radius:3px;background:#94a3b8;display:inline-block"></span>
+            <span style="font-size:15px;font-weight:800;color:var(--navy)">טרם פנינו (${_newSet.size})</span>
+            <span style="font-size:13px;color:var(--gray-4)">בעלים שלא חתמו ועוד לא תועד מולם טיפול</span></div>`;
+        _newHeadDone = true;
+        return head + `<div class="ref-new-row">
+          <span class="ref-new-name">${escH(r.name)}</span>
+          ${r.apt ? `<span class="ref-new-apt">${escH(r.apt)}</span>` : ''}
+          <span class="ref-new-actions">
+            ${r.phone ? `<a href="tel:${escH(r.phone)}" class="ref-new-btn">📞 ${escH(r.phone)}</a>` : ''}
+            <button type="button" onclick="quickLogCall(${pi},${ri})" class="ref-new-btn primary admin-only editor-allow">תעד פנייה</button>
+            <button type="button" onclick="openRefuserModal(${pi},${ri})" class="ref-new-btn admin-only editor-allow">עריכה</button>
+          </span></div>`;
+      }
       const st = REF_STATUS_STYLE[r.status] || REF_STATUS_STYLE['טרם טופל'];
       const events = refuserEvents(r).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
       const lastContactDate = r.lastCall || (events.length ? events[0].date : '');
@@ -11560,7 +12198,11 @@ function renderRefusers() {
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
           ${typeDot(p.type)}
           <span style="font-size:17px;font-weight:800;color:var(--navy)">${escH(p.name)}</span>
-          ${activeRefs.length?`<span style="font-size:13px;font-weight:700;padding:4px 13px;border-radius:99px;background:#fef2f2;color:#dc2626">${activeRefs.length} דיירים פעילים</span>`:''}
+          <span class="ref-view" role="radiogroup" aria-label="סינון">
+            <button type="button" role="radio" aria-checked="${refusersView==='all'}" onclick="setRefusersView('all')">הכל ${_allRefs.length}</button>
+            <button type="button" role="radio" aria-checked="${refusersView==='care'}" onclick="setRefusersView('care')">בטיפול ${_careSet.size}</button>
+            <button type="button" role="radio" aria-checked="${refusersView==='new'}" onclick="setRefusersView('new')">טרם פנינו ${_newSet.size}</button>
+          </span>
           ${critical?`<span style="font-size:13px;font-weight:800;padding:4px 13px;border-radius:99px;background:#dc2626;color:white">🔥 חוסמים את הרוב — חסרים ${gap} לרוב</span>`:''}
           ${unitPct&&activeRefs.length?`<span style="font-size:12px;color:var(--gray-4)" title="משקל דירה אחת לפי ${Number(p.units)} היחידות הרשומות בפרויקט. בדירה יכולים להיות כמה בעלי זכויות.">כל דירה ≈ ${unitPct}% מהפרויקט</span>`:''}
           ${unitsMismatch&&activeRefs.length?`<span style="font-size:12px;color:#a16207" title="מספר היחידות בפרויקט שונה ממספר הדירות בנסח — לא ניתן לחשב משקל דירה">⚠ יחידות בפרויקט (${Number(p.units)}) ≠ דירות בנסח (${_tm.aptTotal})</span>`:''}
@@ -11606,6 +12248,7 @@ function applyRolePermissions(role) {
       .edit-btn { display:none !important; }
       .btn-add { display:none !important; }
       .admin-only { display:none !important; }
+      .tn-sign.ro { display:inline-flex !important; }
       [onclick*="openEditor"] { display:none !important; }
       [onclick*="openQuickAddProject"] { display:none !important; }
       .note-action-btn { display:none !important; }
@@ -11621,6 +12264,7 @@ function applyRolePermissions(role) {
       .neg-edit-btn { display:none !important; }
       .btn-add { display:none !important; }
       .admin-only { display:none !important; }
+      .tn-sign.ro { display:inline-flex !important; }
       [onclick*="openEditor"] { display:none !important; }
       [onclick*="openQuickAddProject"] { display:none !important; }
       [onclick*="addNegProject"] { display:none !important; }

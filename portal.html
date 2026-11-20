@@ -297,7 +297,7 @@ function openSheet(id) {
     <div class="f"><label>כתובת למשלוח</label><input id="fMail" value="${esc(t.mailAddress)}"></div>
     <div class="f"><label>עו"ד מייצג</label><input id="fLawyer" value="${esc(t.lawyer)}"></div>
     <div class="f"><label>הערה</label><textarea id="fNote">${esc(t.note)}</textarea></div>
-    <div class="f"><label>שיחות (${calls.length})</label>
+    <div class="f"><label>שיחות ופגישות (${calls.length})</label>
       <div class="call-add">
         <div class="f-row" style="margin-bottom:8px">
           <input type="date" id="cDate" value="${today()}" style="height:44px;border:1.5px solid var(--line);border-radius:10px;padding:0 10px;background:#fff">
@@ -306,7 +306,7 @@ function openSheet(id) {
         <textarea id="cSum" placeholder="מה סוכם בשיחה" style="min-height:64px;margin-bottom:8px"></textarea>
         <button class="btn pri" style="height:44px;width:100%" onclick="addCall()">הוסף שיחה</button>
       </div>
-      <div class="calls" id="callList">${calls.map(c=>`<div class="call"><div class="d">${heDate(c.date)}${c.by?` · ${esc(c.by)}`:''}</div>${esc(c.summary)}</div>`).join('')}</div>
+      <div class="calls" id="callList">${calls.map(c=>`<div class="call"><div class="d">${c.type==='meeting'?'🤝 פגישה · ':'📞 '}${heDate(c.date)}${c.by?` · ${esc(c.by)}`:''}</div>${esc(c.summary)}</div>`).join('')}</div>
     </div>`;
   document.getElementById('sheetBg').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -341,7 +341,7 @@ async function addCall() {
     Object.assign(t, r.tenant); toast('השיחה נשמרה ✓');
     document.getElementById('cSum').value = '';
     const sorted = [...t.calls].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-    document.getElementById('callList').innerHTML = sorted.map(c=>`<div class="call"><div class="d">${heDate(c.date)}${c.by?` · ${esc(c.by)}`:''}</div>${esc(c.summary)}</div>`).join('');
+    document.getElementById('callList').innerHTML = sorted.map(c=>`<div class="call"><div class="d">${c.type==='meeting'?'🤝 פגישה · ':'📞 '}${heDate(c.date)}${c.by?` · ${esc(c.by)}`:''}</div>${esc(c.summary)}</div>`).join('');
     render();
   } catch(e) { toast('השמירה נכשלה — ' + e.message, true); }
 }
