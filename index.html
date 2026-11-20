@@ -2243,6 +2243,54 @@
   .ref-view { display:inline-flex; background:#eef2f9; border-radius:10px; padding:3px; gap:3px; }
   .ref-view button { font-family:Heebo,sans-serif; font-size:13px; font-weight:700; padding:5px 12px; border:none; border-radius:8px; background:transparent; color:#64748b; cursor:pointer; min-height:0; }
   .ref-view button[aria-checked="true"] { background:white; color:var(--navy); box-shadow:0 1px 3px rgba(15,31,61,.15); }
+  /* ── Tasks ── */
+  .tasks-badge { display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 5px; margin-inline-start:6px;
+    border-radius:99px; background:#2563eb; color:white; font-size:11px; font-weight:800; line-height:1; }
+  .tasks-badge.late { background:#dc2626; }
+  .tasks-due-banner { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin:0 0 14px; padding:11px 16px;
+    background:#eff6ff; border:1.5px solid #bfdbfe; border-radius:12px; font-size:14px; color:var(--navy); }
+  .tasks-due-banner button { font-family:Heebo,sans-serif; font-size:13px; font-weight:700; padding:7px 14px; border-radius:8px; border:none; background:var(--navy); color:white; cursor:pointer; }
+  .task-group { margin-top:14px; }
+  .task-group-h { font-size:13px; font-weight:800; color:var(--navy); margin-bottom:8px; }
+  .task-group-h span { font-weight:600; color:var(--gray-4); margin-inline-start:4px; }
+  .task-group-h.overdue { color:#b91c1c; }
+  .task-card { display:flex; gap:14px; justify-content:space-between; padding:13px 15px; margin-bottom:8px; background:white; border:1.5px solid #e6edf9;
+    border-inline-start:4px solid #93c5fd; border-radius:12px; }
+  .task-card.overdue { border-inline-start-color:#dc2626; background:#fffafa; }
+  .task-card.today { border-inline-start-color:#2563eb; }
+  .task-card.done { border-inline-start-color:#22c55e; opacity:.8; }
+  .task-card.done .task-title { text-decoration:line-through; color:#64748b; }
+  .task-main { flex:1; min-width:0; }
+  .task-title { font-size:15px; font-weight:700; color:var(--navy); line-height:1.45; white-space:pre-wrap; }
+  .task-where { font-size:13px; color:#334155; margin-top:3px; font-weight:600; }
+  .task-src { font-size:13px; color:#64748b; margin-top:5px; line-height:1.5; background:#f8fafc; border-radius:8px; padding:6px 9px; }
+  .task-foot { font-size:12px; color:#94a3b8; margin-top:6px; }
+  .task-side { display:flex; flex-direction:column; align-items:flex-end; gap:8px; flex-shrink:0; }
+  .task-due { font-size:12px; font-weight:800; padding:4px 10px; border-radius:99px; background:#eff6ff; color:#1d4ed8; white-space:nowrap; }
+  .task-due.overdue { background:#fef2f2; color:#b91c1c; }
+  .task-due.done { background:#f0fdf4; color:#15803d; }
+  .task-due.nodate { background:#f1f5f9; color:#64748b; }
+  .task-actions { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+  .task-btn { white-space:nowrap; font-family:Heebo,sans-serif; font-size:12px; font-weight:700; padding:6px 11px; border-radius:8px; border:1.5px solid #d8e0ee; background:white; color:var(--navy); cursor:pointer; }
+  .task-btn.done { background:#16a34a; border-color:#16a34a; color:white; }
+  .task-btn.cancel { color:#b91c1c; border-color:#fecaca; background:#fef2f2; }
+  .task-empty { padding:28px; text-align:center; color:var(--gray-4); font-size:14px; }
+  .task-lbl { font-size:12px; font-weight:700; color:#64748b; display:block; margin-bottom:5px; }
+  .task-inp { width:100%; padding:10px 12px; border:1.5px solid #d8e0ee; border-radius:9px; font-family:Heebo,sans-serif; font-size:15px; direction:rtl; outline:none; box-sizing:border-box; background:white; }
+  .task-dlg-ctx { font-size:14px; font-weight:700; color:var(--navy); background:#f8faff; border:1.5px solid #e6edf9; border-radius:9px; padding:9px 12px; }
+  .tn-task-box { margin:4px 0 12px; padding:10px 12px; border:1.5px dashed #c7d8f7; border-radius:10px; background:white; }
+  .tn-task-toggle { display:flex; align-items:center; gap:8px; font-size:14px; font-weight:700; color:var(--navy); cursor:pointer; }
+  .tn-task-toggle input { width:17px; height:17px; accent-color:#2563eb; }
+  .tn-open-task { margin:0 18px 10px; padding:9px 13px; background:#eff6ff; border:1.5px solid #bfdbfe; border-radius:10px; display:flex; align-items:center; gap:9px; font-size:14px; color:#1e3a8a; }
+  .tn-open-task.overdue { background:#fef2f2; border-color:#fecaca; color:#991b1b; }
+  @media (max-width: 600px) {
+    .task-card { flex-direction:column; }
+    .task-side { flex-direction:row; align-items:center; justify-content:space-between; }
+    .task-actions { flex-wrap:nowrap; }
+    .task-btn { padding:6px 9px; }
+    #tab-tasks .filter-row #tasksSearch { flex:1 1 100%; min-width:0 !important; }
+    #tnTaskFields { grid-template-columns:1fr !important; }
+  }
 </style>
 </head>
 <body>
@@ -2313,6 +2361,7 @@
   <button class="tab-btn" onclick="switchTab('companies',this);renderCompanies()"><svg class="tab-ico" viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M3 21V7l7-4v4l7-3v17H3zm2-2h4v-3H5v3zm0-5h4v-3H5v3zm0-5h4V6H5v3zm6 10h6v-3h-6v3zm0-5h6v-3h-6v3zm0-5h6V6h-6v3z"/></svg>חברות פרויקט</button>
   <button class="tab-btn" onclick="switchTab('tenants',this);renderTenants()"><svg class="tab-ico" viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zm0 2c-4 0-8 2-8 4.5V21h16v-2.5C20 16 16 14 12 14z"/></svg>דיירים</button>
   <button class="tab-btn" onclick="switchTab('refusers',this);renderRefusers()"><svg class="tab-ico" viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zM4.9 12a7.1 7.1 0 0111.2-5.8L6.2 16.1A7 7 0 014.9 12zm7.1 7.1c-1.6 0-3.1-.5-4.3-1.4L17.8 7.6A7.1 7.1 0 0112 19.1z"/></svg>דיירים שטרם חתמו</button>
+  <button class="tab-btn" onclick="switchTab('tasks',this);loadTasks()"><svg class="tab-ico" viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M19 3h-4.2A3 3 0 009.2 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 0a1 1 0 110 2 1 1 0 010-2zm-1.5 14L6 12.5l1.4-1.4 3.1 3.1 6.1-6.1L18 9.5 10.5 17z"/></svg>משימות<span class="tasks-badge" style="display:none"></span></button>
   <button class="tab-btn admin-only" onclick="switchTab('activity',this);loadCentralActivity()"><svg class="tab-ico" viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M13 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V10l-7-7zm0 2.5L17.5 10H13V5.5zM8 13h8v2H8v-2zm0 4h8v2H8v-2z"/></svg>יומן פעילות מרכזי</button>
   <button class="tab-btn admin-only" onclick="switchTab('settings',this)"><svg class="tab-ico" viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M19.4 13a7.8 7.8 0 000-2l2-1.6a.5.5 0 00.1-.6l-1.9-3.3a.5.5 0 00-.6-.2l-2.4 1a7.3 7.3 0 00-1.7-1l-.4-2.5a.5.5 0 00-.5-.4h-3.8a.5.5 0 00-.5.4l-.4 2.5c-.6.2-1.2.6-1.7 1l-2.4-1a.5.5 0 00-.6.2L2.5 8.8a.5.5 0 00.1.6L4.6 11a7.8 7.8 0 000 2l-2 1.6a.5.5 0 00-.1.6l1.9 3.3c.1.2.4.3.6.2l2.4-1c.5.4 1.1.8 1.7 1l.4 2.5c0 .2.2.4.5.4h3.8c.3 0 .5-.2.5-.4l.4-2.5c.6-.2 1.2-.6 1.7-1l2.4 1c.2.1.5 0 .6-.2l1.9-3.3a.5.5 0 00-.1-.6L19.4 13zM12 15.5a3.5 3.5 0 110-7 3.5 3.5 0 010 7z"/></svg>הגדרות</button>
 </div>
@@ -2350,6 +2399,7 @@
   
   <button onclick="mobileNavTo('tenants',null);renderTenants();closeMobileMore()"><svg class="tab-ico" viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M12 12a4 4 0 100-8 4 4 0 000 8zm0 2c-4 0-8 2-8 4.5V21h16v-2.5C20 16 16 14 12 14z"/></svg>דיירים</button>
   <button onclick="mobileNavTo('refusers',null);renderRefusers();closeMobileMore()"><svg class="tab-ico" viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zM4.9 12a7.1 7.1 0 0111.2-5.8L6.2 16.1A7 7 0 014.9 12zm7.1 7.1c-1.6 0-3.1-.5-4.3-1.4L17.8 7.6A7.1 7.1 0 0112 19.1z"/></svg>דיירים שטרם חתמו</button>
+  <button onclick="mobileNavTo('tasks',null);loadTasks();closeMobileMore()"><svg class="tab-ico" viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M19 3h-4.2A3 3 0 009.2 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 0a1 1 0 110 2 1 1 0 010-2zm-1.5 14L6 12.5l1.4-1.4 3.1 3.1 6.1-6.1L18 9.5 10.5 17z"/></svg>משימות<span class="tasks-badge" style="display:none"></span></button>
   <button class="admin-only" onclick="mobileNavTo('activity',null);loadCentralActivity();closeMobileMore()">📜 יומן פעילות</button>
   <button class="admin-only" onclick="mobileNavTo('settings',null);closeMobileMore()"><svg class="tab-ico" viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M19.4 13a7.8 7.8 0 000-2l2-1.6a.5.5 0 00.1-.6l-1.9-3.3a.5.5 0 00-.6-.2l-2.4 1a7.3 7.3 0 00-1.7-1l-.4-2.5a.5.5 0 00-.5-.4h-3.8a.5.5 0 00-.5.4l-.4 2.5c-.6.2-1.2.6-1.7 1l-2.4-1a.5.5 0 00-.6.2L2.5 8.8a.5.5 0 00.1.6L4.6 11a7.8 7.8 0 000 2l-2 1.6a.5.5 0 00-.1.6l1.9 3.3c.1.2.4.3.6.2l2.4-1c.5.4 1.1.8 1.7 1l.4 2.5c0 .2.2.4.5.4h3.8c.3 0 .5-.2.5-.4l.4-2.5c.6-.2 1.2-.6 1.7-1l2.4 1c.2.1.5 0 .6-.2l1.9-3.3a.5.5 0 00-.1-.6L19.4 13zM12 15.5a3.5 3.5 0 110-7 3.5 3.5 0 010 7z"/></svg>הגדרות</button>
 </div>
@@ -2519,6 +2569,13 @@
         </div>
         <label id="tnLblSum" style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5px">מה נאמר בשיחה</label>
         <textarea id="tnCallSummary" rows="3" placeholder="סיכום השיחה, מה סוכם, מה הצעד הבא..." style="width:100%;padding:11px 12px;border:1.5px solid #d8e0ee;border-radius:9px;font-family:Heebo,sans-serif;font-size:15px;direction:rtl;outline:none;box-sizing:border-box;resize:vertical;line-height:1.55;margin-bottom:12px"></textarea>
+        <div class="tn-task-box">
+          <label class="tn-task-toggle"><input type="checkbox" id="tnTaskOn" onchange="document.getElementById('tnTaskFields').style.display=this.checked?'grid':'none'"> 📌 לפתוח משימה ללילך מהתיעוד הזה</label>
+          <div id="tnTaskFields" style="display:none;grid-template-columns:2fr 1fr;gap:10px;margin-top:10px">
+            <input type="text" id="tnTaskTitle" class="task-inp" placeholder="מה צריך לעשות?">
+            <input type="date" id="tnTaskDue" class="task-inp" style="direction:ltr;text-align:right" aria-label="עד מתי">
+          </div>
+        </div>
         <button id="tnCallAddBtn" onclick="addTenantCall()" style="font-family:Heebo,sans-serif;font-size:14px;font-weight:700;padding:10px 22px;border-radius:9px;border:none;background:#2563eb;color:#fff;cursor:pointer">הוסף שיחה</button>
       </div>
       <div style="font-size:13px;font-weight:800;color:var(--navy);margin-bottom:10px">היסטוריית שיחות ופגישות</div>
@@ -2977,6 +3034,7 @@
 
 <!-- TAB: Dashboard -->
 <div class="tab-page active" id="tab-dashboard">
+  <div id="tasksDueBanner" class="tasks-due-banner" style="display:none"></div>
 
   <!-- KPIs -->
   <div class="kpi-grid">
@@ -3252,6 +3310,41 @@
 </div><!-- /tab-signatures -->
 
 <!-- TAB: Settings -->
+<div class="tab-page" id="tab-tasks">
+  <div class="table-card">
+    <div class="card-head">
+      <div><div class="card-title">משימות — קשרי דיירים</div><div id="tasksSummary" style="font-size:12px;color:var(--gray-4);margin-top:3px"></div></div>
+      <div class="filter-row" style="flex-wrap:wrap">
+        <input type="text" id="tasksSearch" placeholder="🔍 חיפוש משימה, פרויקט, דייר..." oninput="renderTasks()" style="font-family:Heebo,sans-serif;font-size:12px;padding:7px 12px;border:1.5px solid var(--gray-line);border-radius:8px;min-width:200px">
+        <button class="filter-btn active" data-tf="open" onclick="setTasksFilter('open')">פתוחות</button>
+        <button class="filter-btn" data-tf="done" onclick="setTasksFilter('done')">בוצעו</button>
+        <button class="filter-btn" data-tf="all" onclick="setTasksFilter('all')">הכל</button>
+        <button class="filter-btn admin-only editor-allow" onclick="openTaskDialog()" style="background:var(--navy);color:white;border-color:var(--navy)">➕ משימה חדשה</button>
+      </div>
+    </div>
+    <div id="tasksList" style="padding:6px 18px 18px"><div class="task-empty">טוען משימות…</div></div>
+  </div>
+</div>
+
+<div id="taskDlgOverlay" onclick="if(event.target===this)closeTaskDialog()" style="display:none;position:fixed;inset:0;background:rgba(15,31,61,.6);z-index:1100;align-items:center;justify-content:center;padding:16px">
+  <div role="dialog" aria-modal="true" aria-labelledby="taskDlgTitle" style="background:white;border-radius:16px;width:min(520px,95vw);max-height:92vh;overflow-y:auto;box-shadow:0 26px 66px rgba(15,31,61,.4)">
+    <div style="padding:16px 22px;background:var(--navy);color:white;border-radius:16px 16px 0 0;display:flex;justify-content:space-between;align-items:center">
+      <div id="taskDlgTitle" style="font-size:16px;font-weight:800">משימה חדשה</div>
+      <button type="button" onclick="closeTaskDialog()" aria-label="סגור" style="background:rgba(255,255,255,.2);border:none;width:32px;height:32px;border-radius:8px;font-size:20px;cursor:pointer;color:white">×</button>
+    </div>
+    <div style="padding:18px 22px;display:flex;flex-direction:column;gap:12px">
+      <div id="taskDlgWhere"></div>
+      <div><label class="task-lbl" for="taskDlgText">מה צריך לעשות?</label>
+        <textarea id="taskDlgText" rows="3" class="task-inp" placeholder="לדוגמה: לשלוח למשה את התוכנית המעודכנת של המרפסת"></textarea></div>
+      <div><label class="task-lbl" for="taskDlgDue">עד מתי</label><input type="date" id="taskDlgDue" class="task-inp" style="direction:ltr;text-align:right"></div>
+    </div>
+    <div style="padding:14px 22px;border-top:1.5px solid #e6edf9;display:flex;gap:10px;justify-content:flex-start">
+      <button type="button" id="taskDlgSave" onclick="saveTaskDialog()" style="font-family:Heebo,sans-serif;font-size:14px;font-weight:700;padding:10px 22px;border-radius:9px;border:none;background:#2563eb;color:#fff;cursor:pointer">שמור</button>
+      <button type="button" onclick="closeTaskDialog()" style="font-family:Heebo,sans-serif;font-size:14px;font-weight:600;padding:10px 18px;border-radius:9px;border:1.5px solid #d8e0ee;background:white;color:var(--navy);cursor:pointer">ביטול</button>
+    </div>
+  </div>
+</div>
+
 <div class="tab-page" id="tab-activity">
   <div class="table-card">
     <div class="card-head">
@@ -5323,7 +5416,8 @@ const TN_KIND = {
   meeting: { icon: '🤝', noun: 'פגישה', date: 'תאריך הפגישה', by: 'מי השתתף בפגישה', sum: 'מה סוכם בפגישה',
              ph: 'סיכום הפגישה, מה סוכם, מה הצעד הבא...', add: 'הוסף פגישה' }
 };
-const tnKindOf = cl => (cl && cl.type === 'meeting') ? 'meeting' : 'call';
+TN_KIND.task = { icon: '✅', noun: 'משימה שבוצעה' };
+const tnKindOf = cl => (cl && (cl.type === 'meeting' || cl.type === 'task')) ? cl.type : 'call';
 let tenantCallKind = 'call';
 function setTenantCallKind(k) {
   tenantCallKind = (k === 'meeting') ? 'meeting' : 'call';
@@ -5345,6 +5439,10 @@ function openTenantCall(tid) {
   document.getElementById('tnCallBy').value = currentUsername || '';
   document.getElementById('tnCallSummary').value = '';
   setTenantCallKind('call');
+  document.getElementById('tnTaskOn').checked = false;
+  document.getElementById('tnTaskFields').style.display = 'none';
+  document.getElementById('tnTaskTitle').value = '';
+  document.getElementById('tnTaskDue').value = isoAddDays(getTodayISO(), 2);
   renderTenantCalls();
   document.getElementById('tenantCallOverlay').style.display = 'flex';
   document.body.style.overflow = 'hidden';
@@ -5377,9 +5475,18 @@ function renderTenantCalls() {
         <div style="font-size:12px;font-weight:800;color:var(--mid-blue);margin-bottom:3px">${m.noun} · ${d}${cl.by?` · 👤 ${escH(cl.by)}`:''}</div>
         <div style="font-size:14px;color:var(--text);line-height:1.55">${escH(cl.summary||'')}</div>
       </div>
+      ${tnKindOf(cl) !== 'task' ? `<button type="button" class="admin-only editor-allow" onclick="taskFromCall(${real})" title="פתח משימה מהתיעוד הזה" style="background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:7px;color:#1d4ed8;font-family:Heebo,sans-serif;font-size:12px;font-weight:700;cursor:pointer;padding:3px 8px;flex-shrink:0">📌 משימה</button>` : ''}
       <button onclick="deleteTenantCall(${real})" aria-label="מחק ${m.noun}" style="background:none;border:none;color:#dc2626;font-size:17px;cursor:pointer;flex-shrink:0;padding:0 3px;line-height:1">×</button>
     </div>`;
   }).join('');
+}
+
+function taskFromCall(i) {
+  const p = projects[tenantsProjIdx]; const t = findTenant(tenantCallId);
+  const cl = t && Array.isArray(t.calls) ? t.calls[i] : null;
+  if (!p || !t || !cl) return;
+  openTaskDialog({ ctx: { source: tnKindOf(cl) === 'meeting' ? 'meeting' : 'call', source_date: cl.date || null, source_summary: String(cl.summary || '').slice(0, 2000),
+                          project_id: p.projectId, project_name: p.name, tenant_id: t.id, tenant_name: t.realName || t.name } });
 }
 
 async function addTenantCall() {
@@ -5392,6 +5499,10 @@ async function addTenantCall() {
   if (!date)    { showToast('יש לבחור תאריך', 'error'); return; }
   const kind = tenantCallKind, km = TN_KIND[kind];
   if (!summary) { showToast(`יש להזין את תוכן ה${km.noun}`, 'error'); return; }
+  const wantTask = document.getElementById('tnTaskOn').checked;
+  const taskTitle = document.getElementById('tnTaskTitle').value.trim();
+  const taskDue = document.getElementById('tnTaskDue').value || null;
+  if (wantTask && !taskTitle) { showToast('כתוב מה צריך לעשות במשימה', 'error'); return; }
 
   const before = Array.isArray(t.calls) ? JSON.parse(JSON.stringify(t.calls)) : [];
   if (!Array.isArray(t.calls)) t.calls = [];
@@ -5405,6 +5516,19 @@ async function addTenantCall() {
   renderTenantCalls();
   renderTenants();
   logActivity(p.name, 'edit', 'דייר', t.name, `${km.noun} תועדה: ${summary.slice(0,60)}`);
+  if (wantTask) {
+    const row = await createTask({ source: kind, source_date: date, source_summary: summary.slice(0, 2000),
+      project_id: p.projectId, project_name: p.name, tenant_id: t.id, tenant_name: t.realName || t.name, title: taskTitle, due_date: taskDue });
+    if (row) {
+      document.getElementById('tnTaskOn').checked = false; document.getElementById('tnTaskFields').style.display = 'none';
+      document.getElementById('tnTaskTitle').value = '';
+      renderTenantCalls(); renderTenants();
+      showToast(`ה${km.noun} נשמרה ✓ · נפתחה משימה ל${TASK_ASSIGNEE_LABEL}`);
+    } else {
+      showToast(`ה${km.noun} נשמרה, אך פתיחת המשימה נכשלה — המשימה נשארה בטופס, נסה שוב`, 'error');
+    }
+    return;
+  }
   showToast(`ה${km.noun} נשמרה ✓`);
 }
 
@@ -5423,6 +5547,275 @@ async function deleteTenantCall(i) {
   if (!ok) { t.calls = before; renderTenantCalls(); showToast('המחיקה נכשלה', 'error'); return; }
   logActivity(p.name, 'delete', 'דייר', t.name, `${_kn} נמחקה (${removed.date||''})`);
   renderTenants();
+}
+
+
+// ══════════ Tasks — for the tenant-relations manager ══════════
+// One row per task in the `tasks` table (not inside the projects JSON, so a task never
+// collides with a project save). Opened from a tenant call/meeting, from a refuser's
+// "next action", or by hand. Server stamps who/when; e-mails are sent by the server.
+const TASKS_URL = 'https://hjlgkhfrovtpmyeczzze.supabase.co/rest/v1/tasks';
+const TASK_ASSIGNEE = 'lilach', TASK_ASSIGNEE_LABEL = 'לילך';
+let tasks = [], tasksLoaded = false, tasksFilter = 'open', taskDlgCtx = null;
+const taskHdr = (extra) => ({ apikey: SUPA_KEY, Authorization: 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json', ...(extra || {}) });
+const isoAddDays = (iso, n) => { const d = new Date(iso + 'T12:00:00'); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
+const heShort = iso => iso ? new Date(String(iso).slice(0, 10) + 'T00:00:00').toLocaleDateString('he-IL') : '';
+const TASK_SRC = { call: { icon: '📞', noun: 'שיחה' }, meeting: { icon: '🤝', noun: 'פגישה' }, refuser: { icon: '🧍', noun: 'טיפול בדייר' }, manual: { icon: '📝', noun: 'משימה ידנית' } };
+
+async function loadTasks() {
+  try {
+    const since = isoAddDays(getTodayISO(), -45);
+    const r = await fetch(`${TASKS_URL}?select=*&or=(status.eq.open,done_at.gte.${since})&order=due_date.asc.nullslast,created_at.asc&limit=1000`, { headers: taskHdr() });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const rows = await r.json();
+    tasks = Array.isArray(rows) ? rows : []; tasksLoaded = true;
+  } catch (e) { tasksLoaded = false; }
+  updateTasksBadge();
+  if (document.getElementById('tab-tasks')?.classList.contains('active')) renderTasks();
+  return tasksLoaded;
+}
+
+// Every write must come back with exactly the row — an RLS refusal returns 200 with [] .
+async function createTask(fields) {
+  try {
+    const body = { assignee: TASK_ASSIGNEE, ...fields };
+    const r = await fetch(TASKS_URL, { method: 'POST', headers: taskHdr({ Prefer: 'return=representation' }), body: JSON.stringify(body) });
+    if (!r.ok) return null;
+    const [row] = await r.json();
+    if (!row || !row.id) return null;
+    tasks.push(row); updateTasksBadge();
+    return row;
+  } catch (e) { return null; }
+}
+async function updateTask(id, patch) {
+  try {
+    const r = await fetch(`${TASKS_URL}?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', headers: taskHdr({ Prefer: 'return=representation' }), body: JSON.stringify(patch) });
+    if (!r.ok) return null;
+    const [row] = await r.json();
+    if (!row || !row.id) return null;
+    const i = tasks.findIndex(x => x.id === id);
+    if (i >= 0) tasks[i] = row; else tasks.push(row);
+    updateTasksBadge();
+    return row;
+  } catch (e) { return null; }
+}
+
+function taskBucket(t) {
+  if (t.status !== 'open') return 'done';
+  if (!t.due_date) return 'nodate';
+  const today = getTodayISO();
+  if (t.due_date < today) return 'overdue';
+  if (t.due_date === today) return 'today';
+  if (t.due_date <= isoAddDays(today, 7)) return 'week';
+  return 'later';
+}
+const TASK_BUCKETS = [['overdue', '⏰ באיחור'], ['today', '📅 להיום'], ['week', '🗓 השבוע הקרוב'], ['later', '📆 בהמשך'], ['nodate', '• ללא תאריך יעד'], ['done', '✓ בוצעו לאחרונה']];
+
+function updateTasksBadge() {
+  const due = tasks.filter(t => t.status === 'open' && t.due_date && t.due_date <= getTodayISO());
+  const overdue = due.filter(t => t.due_date < getTodayISO()).length, today = due.length - overdue;
+  document.querySelectorAll('.tasks-badge').forEach(b => { b.textContent = due.length; b.style.display = due.length ? 'inline-flex' : 'none'; b.classList.toggle('late', overdue > 0); });
+  const ban = document.getElementById('tasksDueBanner');
+  if (ban) {
+    const canSee = currentRole && currentRole !== 'viewer';
+    if (!canSee || !due.length) { ban.style.display = 'none'; }
+    else {
+      ban.style.display = 'flex';
+      ban.innerHTML = `<span>📌 משימות ל${TASK_ASSIGNEE_LABEL}: ${today ? `<b>${today}</b> להיום` : ''}${today && overdue ? ' · ' : ''}${overdue ? `<b style="color:#b91c1c">${overdue}</b> באיחור` : ''}</span>
+        <button type="button" onclick="mobileNavTo('tasks',null);renderTasks()">לרשימת המשימות ←</button>`;
+    }
+  }
+}
+
+function renderTasks() {
+  const box = document.getElementById('tasksList');
+  if (!box) return;
+  document.querySelectorAll('#tab-tasks .filter-btn[data-tf]').forEach(b => b.classList.toggle('active', b.dataset.tf === tasksFilter));
+  if (!tasksLoaded) {
+    box.innerHTML = `<div class="task-empty">לא ניתן היה לטעון את המשימות. <button type="button" class="filter-btn" onclick="loadTasks()">נסה שוב</button></div>`;
+    return;
+  }
+  const terms = searchTerms('tasksSearch');
+  let list = tasks.filter(t => t.status !== 'cancelled');
+  if (tasksFilter === 'open') list = list.filter(t => t.status === 'open');
+  if (tasksFilter === 'done') list = list.filter(t => t.status === 'done');
+  list = list.filter(t => matchesSearch(terms, t.title, t.project_name, t.tenant_name, t.source_summary, t.done_note, t.created_by));
+  const openCount = tasks.filter(t => t.status === 'open').length;
+  document.getElementById('tasksSummary').textContent =
+    `${openCount} פתוחות · ${tasks.filter(t => t.status === 'open' && t.due_date && t.due_date < getTodayISO()).length} באיחור · אחראית: ${TASK_ASSIGNEE_LABEL}`;
+  if (!list.length) {
+    box.innerHTML = `<div class="task-empty">${tasksFilter === 'open' ? 'אין משימות פתוחות 🎉' : 'אין משימות להצגה'}</div>`;
+    return;
+  }
+  const html = TASK_BUCKETS.map(([b, label]) => {
+    const items = list.filter(t => taskBucket(t) === b);
+    if (!items.length) return '';
+    if (b === 'done') items.sort((x, y) => String(y.done_at || '').localeCompare(String(x.done_at || '')));
+    return `<div class="task-group"><div class="task-group-h ${b}">${label} <span>${items.length}</span></div>${items.map(taskCard).join('')}</div>`;
+  }).join('');
+  box.innerHTML = html;
+}
+
+function taskCard(t) {
+  const b = taskBucket(t), src = TASK_SRC[t.source] || TASK_SRC.manual;
+  const today = getTodayISO();
+  const due = !t.due_date ? 'ללא תאריך' : t.due_date === today ? 'היום' : t.due_date === isoAddDays(today, 1) ? 'מחר' : (b === 'overdue' ? 'באיחור · ' : 'עד ') + heShort(t.due_date);
+  const where = [t.project_name, t.tenant_name].filter(Boolean).map(escH).join(' · ');
+  const srcLine = (t.source !== 'manual' && t.source_summary)
+    ? `<div class="task-src">${src.icon} מתוך ${src.noun}${t.source_date ? ' מ-' + heShort(t.source_date) : ''}: ${escH(String(t.source_summary).slice(0, 220))}${String(t.source_summary).length > 220 ? '…' : ''}</div>` : '';
+  const foot = t.status === 'done'
+    ? `בוצעה${t.done_by ? ' ע"י ' + escH(t.done_by) : ''} · ${heShort(t.done_at)}${t.done_note ? ' · ' + escH(t.done_note) : ''}`
+    : `נפתחה${t.created_by ? ' ע"י ' + escH(t.created_by) : ''} · ${heShort(t.created_at)}`;
+  const id = escA(t.id);
+  const actions = t.status === 'open'
+    ? `<button type="button" class="task-btn done admin-only editor-allow" onclick="completeTask('${id}')">✓ בוצע</button>
+       <button type="button" class="task-btn admin-only editor-allow" onclick="openTaskDialog({id:'${id}'})">עריכה</button>
+       <button type="button" class="task-btn cancel admin-only editor-allow" onclick="cancelTask('${id}')" aria-label="בטל משימה">ביטול</button>`
+    : `<button type="button" class="task-btn admin-only editor-allow" onclick="reopenTask('${id}')">↩ פתח מחדש</button>`;
+  return `<div class="task-card ${b}">
+    <div class="task-main">
+      <div class="task-title">${escH(t.title)}</div>
+      ${where ? `<div class="task-where">${where}</div>` : ''}
+      ${srcLine}
+      <div class="task-foot">${foot}</div>
+    </div>
+    <div class="task-side"><span class="task-due ${b}">${due}</span><div class="task-actions">${actions}</div></div>
+  </div>`;
+}
+
+function setTasksFilter(f) { tasksFilter = f; renderTasks(); }
+
+// ── create / edit dialog ──
+function openTaskDialog(opts = {}) {
+  const t = opts.id ? tasks.find(x => x.id === opts.id) : null;
+  if (opts.id && !t) { showToast('המשימה לא נמצאה — רענן', 'error'); return; }
+  taskDlgCtx = t ? { id: t.id } : { ctx: opts.ctx || null };
+  const ctx = t || opts.ctx || {};
+  document.getElementById('taskDlgTitle').textContent = t ? 'עריכת משימה' : `משימה חדשה ל${TASK_ASSIGNEE_LABEL}`;
+  document.getElementById('taskDlgText').value = t ? t.title : (opts.title || '');
+  document.getElementById('taskDlgDue').value = t ? (t.due_date || '') : isoAddDays(getTodayISO(), 2);
+  // where: fixed for a task tied to a tenant/refuser; a project picker for a manual one
+  const fixed = !!(t || (opts.ctx && opts.ctx.project_id));
+  const where = document.getElementById('taskDlgWhere');
+  if (fixed) {
+    where.innerHTML = `<div class="task-dlg-ctx">${escH([ctx.project_name, ctx.tenant_name].filter(Boolean).join(' · ') || 'ללא שיוך')}</div>`
+      + ((ctx.source_summary && ctx.source !== 'manual') ? `<div class="task-src" style="margin-top:6px">${(TASK_SRC[ctx.source] || TASK_SRC.manual).icon} ${escH(String(ctx.source_summary).slice(0, 300))}</div>` : '');
+  } else {
+    where.innerHTML = `<label class="task-lbl" for="taskDlgProj">פרויקט (לא חובה)</label>
+      <select id="taskDlgProj" class="task-inp"><option value="">— ללא שיוך לפרויקט —</option>${projects.map(p => `<option value="${escA(p.projectId)}">${escH(p.name)}</option>`).join('')}</select>`;
+  }
+  document.getElementById('taskDlgOverlay').style.display = 'flex';
+  setTimeout(() => document.getElementById('taskDlgText').focus(), 50);
+}
+function closeTaskDialog() { document.getElementById('taskDlgOverlay').style.display = 'none'; taskDlgCtx = null; }
+
+async function saveTaskDialog() {
+  if (!taskDlgCtx) return;
+  const title = document.getElementById('taskDlgText').value.trim();
+  const due = document.getElementById('taskDlgDue').value || null;
+  if (!title) { showToast('יש לכתוב מה צריך לעשות', 'error'); return; }
+  const btn = document.getElementById('taskDlgSave'); btn.disabled = true;
+  let row;
+  if (taskDlgCtx.id) {
+    row = await updateTask(taskDlgCtx.id, { title, due_date: due });
+  } else {
+    let ctx = taskDlgCtx.ctx;
+    if (!ctx) {
+      const pid = document.getElementById('taskDlgProj')?.value || '';
+      const p = projects.find(x => x.projectId === pid);
+      ctx = { source: 'manual', project_id: p ? p.projectId : null, project_name: p ? p.name : null };
+    }
+    row = await createTask({ ...ctx, title, due_date: due });
+  }
+  btn.disabled = false;
+  if (!row) { showToast('שמירת המשימה נכשלה — נסה שוב', 'error'); return; }
+  closeTaskDialog(); renderTasks(); refreshTaskViews();
+  showToast('המשימה נשמרה ✓');
+}
+
+function refreshTaskViews() {
+  try { if (document.getElementById('tab-tenants')?.classList.contains('active')) renderTenants(); } catch (e) {}
+  try { if (document.getElementById('tenantCallOverlay')?.style.display === 'flex') renderTenantCalls(); } catch (e) {}
+}
+
+async function cancelTask(id) {
+  const t = tasks.find(x => x.id === id); if (!t) return;
+  if (!await appConfirm(`לבטל את המשימה?\n\n${t.title}`)) return;
+  const row = await updateTask(id, { status: 'cancelled' });
+  if (!row) { showToast('הביטול נכשל', 'error'); return; }
+  if (t.source === 'refuser' && t.ref_key) await clearRefuserNextAction(t, null);
+  renderTasks(); refreshTaskViews(); showToast('המשימה בוטלה');
+}
+async function reopenTask(id) {
+  const row = await updateTask(id, { status: 'open' });
+  if (!row) { showToast('הפעולה נכשלה', 'error'); return; }
+  renderTasks(); refreshTaskViews();
+}
+
+// Done → the task closes AND a line is added to the tenant's log (or the refuser's history),
+// so the tenant card tells the whole story. The task is the source of truth: if the log line
+// fails, the task stays done and the user is told.
+async function completeTask(id) {
+  const t = tasks.find(x => x.id === id); if (!t) return;
+  const note = await appPrompt(`סימון כבוצע:\n${t.title}\n\nמה נעשה? (לא חובה)`, '');
+  if (note === null) return;
+  const row = await updateTask(id, { status: 'done', done_note: String(note).trim().slice(0, 500) || null });
+  if (!row) { showToast('הסימון נכשל — נסה שוב', 'error'); return; }
+  let logged = true;
+  if (t.source === 'refuser' && t.ref_key) logged = await clearRefuserNextAction(row, row.done_note);
+  else if (t.tenant_id) logged = await logTaskOnTenant(row);
+  renderTasks(); refreshTaskViews();
+  showToast(logged ? 'בוצע ✓' : 'המשימה סומנה כבוצעה, אך הרישום בכרטיס הדייר נכשל', logged ? undefined : 'error');
+}
+
+async function logTaskOnTenant(t) {
+  if (!canWriteProjects()) return false;
+  const cand = JSON.parse(JSON.stringify(projects));
+  const cp = cand.find(p => p.projectId === t.project_id); if (!cp) return false;
+  const tn = (cp.tenants || []).find(x => x.id === t.tenant_id); if (!tn) return false;
+  if (!Array.isArray(tn.calls)) tn.calls = [];
+  tn.calls.push({ type: 'task', date: getTodayISO(), by: currentUsername || '', loggedAt: getTodayISO(),
+                  summary: `✓ בוצעה משימה: ${t.title}${t.done_note ? ' — ' + t.done_note : ''}` });
+  const res = await saveProjectsToCloudEx({ data: cand });
+  return res.status === 'success';
+}
+
+async function clearRefuserNextAction(t, doneNote) {
+  if (!canWriteProjects()) return false;
+  const key = String(t.ref_key || ''); const sep = key.indexOf(':');
+  const pid = key.slice(0, sep), rid = key.slice(sep + 1);
+  const cand = JSON.parse(JSON.stringify(projects));
+  const cp = cand.find(p => p.projectId === pid); if (!cp) return false;
+  const rec = (cp.refusers || []).find(r => r.refId === rid || r.tenantKey === rid); if (!rec) return false;
+  rec.nextAction = ''; rec.nextActionDate = '';
+  if (doneNote !== null) {
+    if (!Array.isArray(rec.events)) rec.events = [];
+    rec.events.push({ id: genEventId(), type: 'status', date: getTodayISO(), loggedBy: currentUsername || '',
+                      summary: `✓ בוצע: ${t.title}${doneNote ? ' — ' + doneNote : ''}` });
+    rec.lastCall = rec.events.map(e => e.date).sort().pop() || rec.lastCall || '';
+  }
+  const res = await saveProjectsToCloudEx({ data: cand });
+  if (res.status === 'success') { try { renderRefusers(); } catch (e) {} }
+  return res.status === 'success';
+}
+
+// The refuser's "next action" IS a task: keep exactly one open task per refuser in step with it.
+async function syncRefuserTask(p, entry) {
+  const rid = entry.refId || entry.tenantKey; if (!p || !rid) return;
+  if (!tasksLoaded) await loadTasks();
+  if (!tasksLoaded) { showToast('הדייר נשמר, אך לא ניתן היה לעדכן את המשימה — רענן ונסה שוב', 'error'); return; }
+  const key = `${p.projectId}:${rid}`;
+  const open = tasks.find(t => t.status === 'open' && t.ref_key === key);
+  const title = String(entry.nextAction || '').trim(), due = entry.nextActionDate || null;
+  let ok = true;
+  if (title) {
+    if (open) { if (open.title !== title || (open.due_date || null) !== due) ok = !!(await updateTask(open.id, { title, due_date: due })); }
+    else ok = !!(await createTask({ source: 'refuser', ref_key: key, project_id: p.projectId, project_name: p.name,
+                                    tenant_id: entry.tenantKey ? String(entry.tenantKey).replace('tenant:', '') : null,
+                                    tenant_name: entry.name || null, title, due_date: due,
+                                    source_summary: [entry.status, entry.reason].filter(Boolean).join(' · ') || null, source_date: getTodayISO() }));
+  } else if (open) ok = !!(await updateTask(open.id, { status: 'cancelled' }));
+  if (!ok) showToast('הדייר נשמר, אך עדכון המשימה נכשל', 'error');
 }
 
 
@@ -6027,6 +6420,9 @@ function renderTenants() {
           <button onclick="deleteTenantNote('${t.id}')" class="admin-only editor-allow" title="מחק הערה"
             style="flex-shrink:0;background:#fef2f2;border:1.5px solid #fecaca;border-radius:7px;color:#dc2626;font-family:Heebo,sans-serif;font-size:12px;font-weight:600;cursor:pointer;padding:4px 9px;line-height:1.3">מחק</button>
         </div>` : ''}
+        ${tasks.filter(k => k.status === 'open' && k.tenant_id === t.id).map(k => `<div class="tn-open-task ${taskBucket(k)}">
+            <span style="flex-shrink:0">📌</span><span style="flex:1;min-width:0"><b>משימה פתוחה:</b> ${escH(k.title)}${k.due_date ? ` · עד ${heShort(k.due_date)}` : ''}</span>
+            <button type="button" class="task-btn done admin-only editor-allow" onclick="completeTask('${escA(k.id)}')">✓ בוצע</button></div>`).join('')}
         ${tCalls.length ? `<div style="margin:0 18px 10px;padding:11px 14px;background:#f8faff;border:1.5px solid #e0eaff;border-radius:10px">
           <div style="font-size:12px;font-weight:800;color:var(--mid-blue);margin-bottom:7px">שיחות ופגישות (${tCalls.length})</div>
           ${tCalls.slice(0,4).map(cl => {
@@ -6126,7 +6522,12 @@ function tnOwnerInfo(p, t, refMap) {
   if (t.signed === true) state = 'signed';
   else if (r && (r.resistance === 'קשה' || r.status === 'בטיפול משפטי' || r.legalStage)) state = 'refuse';
   else if (r && refuserInCare(p, r)) state = 'care';
-  return { state, last: dates.sort().pop() || '', next: (r && r.nextAction) || '', nextDate: (r && r.nextActionDate) || '', ri: e ? e.i : -1 };
+  // an open task on this owner is the next step when the handling record has none
+  const tk = (typeof tasks !== 'undefined' ? tasks : []).filter(k => k.status === 'open' && k.tenant_id === t.id)
+    .sort((a, b) => String(a.due_date || '9').localeCompare(String(b.due_date || '9')))[0];
+  const rn = state !== 'signed' && r && r.nextAction ? r : null;
+  const next = rn ? rn.nextAction : (tk ? tk.title : ''), nextDate = (rn ? rn.nextActionDate : (tk && tk.due_date)) || '';
+  return { state, last: dates.sort().pop() || '', next, nextDate, ri: e ? e.i : -1 };
 }
 function tnAptState(infos) {
   if (infos.every(i => i.state === 'signed')) return 'signed';
@@ -6248,7 +6649,7 @@ function tnRowHTML(p, idx, a, detail) {
   const partial = st !== 'signed' && a.infos.some(i => i.state === 'signed');
   const lastAll = a.infos.map(i => i.last).filter(Boolean).sort().pop() || '';
   const days = tnDaysAgo(lastAll);
-  const nx = a.infos.filter(i => i.state !== 'signed' && i.next).sort((x, y) => String(x.nextDate || '9').localeCompare(String(y.nextDate || '9')))[0];
+  const nx = a.infos.filter(i => i.next).sort((x, y) => String(x.nextDate || '9').localeCompare(String(y.nextDate || '9')))[0];
   const nxLate = nx && nx.nextDate && nx.nextDate < getTodayISO();
   const owners = a.owners.map((t, j) => {
     const inf = a.infos[j];
@@ -7690,7 +8091,7 @@ function migrateNotes(projectsList) {
         calls: (Array.isArray(t.calls) ? t.calls : []).filter(x => x && typeof x === 'object').map(x => ({
           date: String(x.date || ''), summary: String(x.summary || ''),
           by: String(x.by || ''), loggedAt: String(x.loggedAt || ''),
-          ...(x.type === 'meeting' ? { type: 'meeting' } : {}),
+          ...(x.type === 'meeting' || x.type === 'task' ? { type: x.type } : {}),
           ...(x.viaPortal === true ? { viaPortal: true } : {})
         })),
         blockers: (t.blockers && typeof t.blockers === 'object') ? t.blockers : {}
@@ -9347,6 +9748,8 @@ async function doLogin() {
       if (okLoad === false) { showToast('טעינת הנתונים נכשלה — רענן את הדף', 'error'); return; }
       await loadNegotiationsFromCloud();
       renderAll();
+      loadTasks();
+      setInterval(() => { if (currentRole) loadTasks(); }, 5 * 60 * 1000);
       setInterval(updateSyncTime, 60000);
       // Show the change-password modal AFTER data is loaded (so dashboard isn't empty behind it)
       if (data[0].must_change) {
@@ -9859,7 +10262,7 @@ async function saveCompaniesEditor() {
 }
 
 // ── App Version Check ─────────────────────────────────────
-const APP_VERSION = 102; // bump on every release
+const APP_VERSION = 103; // bump on every release
 let versionOk = true;
 
 async function checkAppVersion() {
@@ -11335,6 +11738,7 @@ async function saveRefuser() {
   // `projects` is now exactly `candidateAll` (saveProjectsToCloudEx set it).
   const p = projects.find(x => x.projectId === refuserEditCtx.projectId);
   logActivity(p.name, logMsg[0], 'דייר שטרם חתם', entry.name, logMsg[1]);
+  syncRefuserTask(p, entry);   // the "next action" is a task for the tenant-relations manager
   if (tenantLog) logActivity(p.name, 'edit', 'דייר', tenantLog[0], tenantLog[1]);
   closeRefuserModal();
   renderRefusers();
