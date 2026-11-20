@@ -295,7 +295,10 @@
     vertical-align: middle;
   }
   .proj-table tr:last-child td { border-bottom: none; }
-  .proj-table tr:hover td { background: #f8fbff; }
+  /* gentle separation between projects: alternating tint + a clearer divider */
+  .proj-table tbody tr:not(.proj-group-header):nth-child(even) td { background: #f8fafc; }
+  .proj-table tbody tr:not(.proj-group-header) td { border-bottom-color: #e6ebf3 !important; }
+  .proj-table tr:hover td { background: #f1f6ff; }
   .proj-table tr.totals td {
     background: var(--navy);
     color: white;
@@ -1852,6 +1855,7 @@
 
 
   /* ── Meeting Mode ── */
+  body.meeting-mode .doc-del-btn,
   body.meeting-mode .admin-only,
   body.meeting-mode .editor-allow,
   body.meeting-mode .edit-btn,
@@ -2094,11 +2098,11 @@
     table.proj-table thead { display: none; }
     table.proj-table tbody tr {
       display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px 8px;
-      grid-template-areas: "name name name" "pct pct pct" "units signed new" "status status status" "target owner owner" "notes notes notes";
+      grid-template-areas: "name name name" "pct pct pct" "units signed new" "status status owner" "notes notes notes";
       padding: 14px 14px 12px; margin: 10px 0; border: 1.5px solid #e2e8f0; border-radius: 14px; background: white;
       box-shadow: 0 1px 3px rgba(15,31,61,.05);
     }
-    table.proj-table tbody tr:hover td { background: transparent; }
+    table.proj-table tbody tr:hover td, table.proj-table tbody tr:not(.proj-group-header):nth-child(even) td { background: transparent; }
     table.proj-table td { display: block; padding: 0 !important; border: none !important; text-align: right !important; min-width: 0; }
     table.proj-table td.c-name   { grid-area: name; }
     table.proj-table td.c-pct    { grid-area: pct; }
@@ -2240,6 +2244,9 @@
     .tn-detail { padding:4px 8px 10px; }
   }
 
+  .perm-toggle { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:var(--navy); white-space:nowrap; cursor:pointer; }
+  .perm-toggle input { width:16px; height:16px; accent-color:var(--blue); }
+  .perm-toggle:has(input:disabled) { color:var(--gray-4); cursor:default; }
   .ref-view { display:inline-flex; background:#eef2f9; border-radius:10px; padding:3px; gap:3px; }
   .ref-view button { font-family:Heebo,sans-serif; font-size:13px; font-weight:700; padding:5px 12px; border:none; border-radius:8px; background:transparent; color:#64748b; cursor:pointer; min-height:0; }
   .ref-view button[aria-checked="true"] { background:white; color:var(--navy); box-shadow:0 1px 3px rgba(15,31,61,.15); }
@@ -3165,7 +3172,7 @@
           <th onclick="sortTable('units')" style="cursor:pointer" title="לחץ למיון">יח' קיימות <span class="sort-arrow" data-col="units"></span></th>
           <th onclick="sortTable('signed')" style="cursor:pointer" title="לחץ למיון">חתמו <span class="sort-arrow" data-col="signed"></span></th>
           <th onclick="sortTable('pct')" style="min-width:130px;cursor:pointer" title="לחץ למיון">% חתימות <span class="sort-arrow" data-col="pct"></span></th>
-          <th onclick="sortTable('target')" style="cursor:pointer" title="לחץ למיון">יעד לחתימה <span class="sort-arrow" data-col="target"></span></th>
+
           <th onclick="sortTable('status')" style="cursor:pointer" title="לחץ למיון">סטטוס <span class="sort-arrow" data-col="status"></span></th>
           <th onclick="sortTable('owner')" style="cursor:pointer" title="לחץ למיון">אחראי <span class="sort-arrow" data-col="owner"></span></th>
           <th style="min-width:180px">הערות</th>
@@ -3178,7 +3185,7 @@
           <td id="tot-new" style="text-align:center;font-weight:700"></td>
           <td id="tot-units" style="text-align:center;font-weight:700"></td>
           <td id="tot-signed" style="text-align:center;font-weight:700"></td>
-          <td id="tot-pct" style="font-weight:700;color:var(--navy)" colspan="5"></td>
+          <td id="tot-pct" style="font-weight:700;color:var(--navy)" colspan="4"></td>
         </tr>
       </tfoot>
     </table>
@@ -6953,11 +6960,6 @@ function buildProjectRow(p) {
       <span class="pct-num pct-${majorityTier(p)}">${pct}%</span>
       <div class="pct-bar"><div class="pct-bar-fill" style="width:${pct}%;background:${TIER_BAR[majorityTier(p)]}"></div></div>
     </div>${buildingMajorityChips(p)}</td>
-    <td class="c-target" data-label="יעד לחתימה" style="font-size:11px;color:var(--text-2);white-space:nowrap;text-align:center">${
-      TARGET_NOT_RELEVANT.includes(p.status) ? '<span style="color:var(--gray-4)">—</span>' :
-      (p.target && !/^\s*(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{4}-\d{2}-\d{2}|\d{1,2}[\/.\-]\d{4}|Q[1-4]\s*\d{4}|רבעון.*)\s*$/i.test(String(p.target)))
-        ? `<span style="color:#b45309" title="ערך לא תקין — צפוי תאריך. ניתן לתקן בעריכה">⚠ ${escH(p.target)}</span>`
-        : targetCellHTML(p.target)}</td>
     <td class="c-status"><span class="badge ${sc.cls}">${sc.icon} ${p.status}</span></td>
     <td class="c-owner" data-label="אחראי" style="font-size:12px;font-weight:500;text-align:center">${escH(p.owner)}</td>
     <td class="notes-cell c-notes">${notesHTML}</td>
@@ -6988,10 +6990,10 @@ function renderTable(filter) {
 
   // Inject into separate tbody sections with group headers
   let html = '';
-  if (tama.length)  html += `<tr class="proj-group-header proj-group-tama"><td colspan="9"><div class="proj-group-label"><div class="proj-group-dot" style="background:#1a56db"></div>התחדשות בניינית<span style="font-weight:400;color:var(--gray-4);margin-right:8px">${tama.length} פרויקטים</span></div></td></tr>` + tamaRows;
-  if (pinuy.length) html += `<tr class="proj-group-header proj-group-pinuy"><td colspan="9"><div class="proj-group-label"><div class="proj-group-dot" style="background:#7dd3fc"></div>פינוי-בינוי<span style="font-weight:400;color:var(--gray-4);margin-right:8px">${pinuy.length} פרויקטים</span></div></td></tr>` + pinuyRows;
-  if (others.length) html += `<tr class="proj-group-header"><td colspan="9"><div class="proj-group-label"><div class="proj-group-dot" style="background:#94a3b8"></div>אחר</div></td></tr>` + otherRows;
-  if (!html) html = `<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--gray-4)">אין פרויקטים</td></tr>`;
+  if (tama.length)  html += `<tr class="proj-group-header proj-group-tama"><td colspan="8"><div class="proj-group-label"><div class="proj-group-dot" style="background:#1a56db"></div>התחדשות בניינית<span style="font-weight:400;color:var(--gray-4);margin-right:8px">${tama.length} פרויקטים</span></div></td></tr>` + tamaRows;
+  if (pinuy.length) html += `<tr class="proj-group-header proj-group-pinuy"><td colspan="8"><div class="proj-group-label"><div class="proj-group-dot" style="background:#7dd3fc"></div>פינוי-בינוי<span style="font-weight:400;color:var(--gray-4);margin-right:8px">${pinuy.length} פרויקטים</span></div></td></tr>` + pinuyRows;
+  if (others.length) html += `<tr class="proj-group-header"><td colspan="8"><div class="proj-group-label"><div class="proj-group-dot" style="background:#94a3b8"></div>אחר</div></td></tr>` + otherRows;
+  if (!html) html = `<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--gray-4)">אין פרויקטים</td></tr>`;
 
   tbody.innerHTML = html;
 
@@ -7908,6 +7910,8 @@ async function loadUsers() {
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
+        <label class="perm-toggle" title="${u.role === 'admin' ? 'מנהל תמיד רשאי למחוק מסמכים' : 'הרשאה נוספת: מחיקת מסמכים בלשונית חברות פרויקט'}">
+          <input type="checkbox" ${u.can_delete_docs ? 'checked' : ''} ${u.role === 'admin' ? 'disabled' : ''} onchange="setUserDocDelete('${u.id}', this)"> מחיקת מסמכים</label>
         ${canDelete ? `<select onchange="changeUserRole('${u.id}', this.value)" style="font-family:Heebo,sans-serif;font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;border:1.5px solid var(--gray-line);background:${roleBg};color:${roleColor};cursor:pointer">
           <option value="viewer" ${u.role==='viewer'?'selected':''}>צפייה</option>
           <option value="editor" ${u.role==='editor'?'selected':''}>עורך</option>
@@ -7933,8 +7937,17 @@ async function editUserEmail(id, currentEmail) {
 async function changeUserRole(id, newRole) {
   const res = await callRpc('update_user_role', { p_id: id, p_role: newRole });
   const r = (await res.json().catch(()=>null)) || {};
-  if (res.ok && r.ok !== false) showUserMsg('ההרשאה עודכנה ✓', 'success');
+  if (res.ok && r.ok !== false) { showUserMsg('ההרשאה עודכנה ✓', 'success'); loadUsers(); }
   else showUserMsg(r.error || 'שגיאה בעדכון ההרשאה', 'error');
+}
+// Extra permission, per user: may delete documents in the project-companies tab
+async function setUserDocDelete(id, box) {
+  const on = box.checked; box.disabled = true;
+  const res = await callRpc('set_user_doc_delete', { p_id: id, p_on: on });
+  const r = (await res.json().catch(()=>null)) || {};
+  box.disabled = false;
+  if (res.ok && r.ok === true) showUserMsg(on ? 'ניתנה הרשאת מחיקת מסמכים ✓ (תחול בכניסה הבאה של המשתמש)' : 'הרשאת מחיקת המסמכים הוסרה ✓', 'success');
+  else { box.checked = !on; showUserMsg(r.error || 'שגיאה בעדכון ההרשאה', 'error'); }
 }
 
 async function addUser() {
@@ -9649,6 +9662,7 @@ async function _saveProjectsCritical({ data } = {}) {
       const reloaded = await reloadAfterConflict(false);
       return { status: 'conflict', reloaded };
     }
+    if (result && result.error === 'doc_delete_forbidden') showToast('השמירה נדחתה: אין לך הרשאה למחוק מסמכי חברה', 'error');
     updateSyncStatus('error');
     return { status: 'error', reason: (result && result.error) || 'unknown' };
   } catch(e) {
@@ -9687,6 +9701,7 @@ let projectsRev = 0;
 let negRev = 0;
 let currentUserId = null;
 let currentUsername = null;
+let canDeleteDocs = false;   // extra per-user permission, decided by the server at login
 
 async function sha256hex(str) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
@@ -9725,6 +9740,7 @@ async function doLogin() {
       currentRole = data[0].role;
       currentUserId = data[0].id;
       currentUsername = data[0].username;
+      canDeleteDocs = data[0].can_delete_docs === true;
       logLogin(data[0].username, data[0].role);
       setTimeout(runDailyBackup, 3000);
       initEmailJS();
@@ -9866,6 +9882,7 @@ function doLogout() {
   currentRole = null;
   currentUserId = null;
   currentUsername = null;
+  canDeleteDocs = false;
   projects = [];
   negotiations = [];
   projectsRowId = null;
@@ -10262,7 +10279,7 @@ async function saveCompaniesEditor() {
 }
 
 // ── App Version Check ─────────────────────────────────────
-const APP_VERSION = 105; // bump on every release
+const APP_VERSION = 106; // bump on every release
 let versionOk = true;
 
 async function checkAppVersion() {
@@ -10479,7 +10496,7 @@ function renderDocsList() {
       </div>
       <button onclick="openCompanyDoc(${di})" style="font-family:Heebo,sans-serif;font-size:11px;font-weight:600;padding:6px 12px;border-radius:7px;border:1.5px solid var(--gray-line);background:white;color:var(--navy);cursor:pointer;white-space:nowrap">👁 צפה</button>
       <button onclick="downloadCompanyDoc(${di})" style="font-family:Heebo,sans-serif;font-size:11px;font-weight:600;padding:6px 12px;border-radius:7px;border:1.5px solid var(--gray-line);background:white;color:var(--green);cursor:pointer;white-space:nowrap">⬇ הורד</button>
-      <button onclick="deleteCompanyDoc(${di})" class="admin-only editor-allow" style="font-family:Heebo,sans-serif;font-size:11px;font-weight:600;padding:6px 10px;border-radius:7px;border:1.5px solid #fecaca;background:#fef2f2;color:#dc2626;cursor:pointer">🗑</button>
+      ${canDeleteDocs ? `<button onclick="deleteCompanyDoc(${di})" class="doc-del-btn" title="מחק מסמך" aria-label="מחק מסמך" style="font-family:Heebo,sans-serif;font-size:11px;font-weight:600;padding:6px 10px;border-radius:7px;border:1.5px solid #fecaca;background:#fef2f2;color:#dc2626;cursor:pointer">🗑</button>` : ''}
     </div>`;
   }).join('');
 }
@@ -10649,29 +10666,29 @@ async function deleteCompanyDoc(di) {
   const p0 = projects[docsProjectIdx];
   const d = p0 && (p0.companyDocs || [])[di];
   if (!d) return;
+  if (!canDeleteDocs) { showToast('אין לך הרשאה למחוק מסמכים', 'error'); return; }
+  if (!canWriteProjects()) { showToast('המערכת בטעינה — נסה שוב בעוד רגע', 'error'); return; }
   const pid = p0.projectId, pname = p0.name, path = d.path, dname = d.name;
   if (!await appConfirm(`למחוק את "${dname}"?`)) return;
 
-  // 1) Remove the REFERENCE first, in a server-confirmed save. The file itself is only
-  //    touched after that — so a failed save can never leave a record pointing to nothing.
-  const cand = JSON.parse(JSON.stringify(projects));
-  const cp = cand.find(x => x.projectId === pid);
-  const at = cp ? (cp.companyDocs || []).findIndex(x => x && x.path === path) : -1;
-  if (!cp || at === -1) { renderDocsList(); return; }             // already gone in the current state
-  cp.companyDocs.splice(at, 1);
-  const r = await saveProjectsToCloudEx({ data: cand });
-  let removed = r.status === 'success';
-  if (!removed && r.status === 'error') {
+  // 1) The server removes the REFERENCE (it checks the delete permission itself). The file is
+  //    touched only after that — a failed call can never leave a record pointing to nothing.
+  let out = null, sent = false;
+  await withDataLock(async () => {
+    const res = await callRpc('delete_company_doc', { p_project_id: pid, p_path: path });
+    sent = true;
+    out = res && res.ok ? await res.json().catch(() => null) : null;
+    if (out && out.ok) await _loadProjectsCritical();          // pick up the new revision
+  });
+  if (out && out.error === 'forbidden') { showToast('אין לך הרשאה למחוק מסמכים', 'error'); return; }
+  let removed = !!(out && out.ok);
+  if (!removed && sent) {
     // Ambiguous (timeout / lost answer): ask the server whether the reference is gone.
     const linked = await verifyFileLinked(pid, path, 'companyDocs');
     if (linked === false) { removed = true; const ok = await loadProjectsFromCloud(); if (ok) await loadNegotiationsFromCloud(); }
     else if (linked === null) { showToast('לא ידוע אם המסמך הוסר (בעיית תקשורת) — רענן את הדף ובדוק', 'error'); renderDocsList(); return; }
   }
-  if (!removed) {
-    if (r.status !== 'conflict') showToast(r.status === 'blocked' ? 'המערכת בטעינה — נסה שוב בעוד רגע' : 'הסרת המסמך נכשלה — המסמך לא נמחק', 'error');
-    renderDocsList();
-    return;                                                       // nothing deleted, nothing to roll back
-  }
+  if (!removed) { showToast('הסרת המסמך נכשלה — המסמך לא נמחק', 'error'); renderDocsList(); return; }
   // 2) The reference is confirmed gone → delete the file. If that fails, the file is merely
   //    unreferenced (invisible, harmless) and is queued for a checked retry.
   if (!(await _deleteStoredFile(path))) _queueOrphanFile(pid, path);
