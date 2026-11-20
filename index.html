@@ -2570,7 +2570,7 @@
         <label id="tnLblSum" style="font-size:12px;font-weight:700;color:#64748b;display:block;margin-bottom:5px">מה נאמר בשיחה</label>
         <textarea id="tnCallSummary" rows="3" placeholder="סיכום השיחה, מה סוכם, מה הצעד הבא..." style="width:100%;padding:11px 12px;border:1.5px solid #d8e0ee;border-radius:9px;font-family:Heebo,sans-serif;font-size:15px;direction:rtl;outline:none;box-sizing:border-box;resize:vertical;line-height:1.55;margin-bottom:12px"></textarea>
         <div class="tn-task-box">
-          <label class="tn-task-toggle"><input type="checkbox" id="tnTaskOn" onchange="document.getElementById('tnTaskFields').style.display=this.checked?'grid':'none'"> 📌 לפתוח משימה ללילך מהתיעוד הזה</label>
+          <label class="tn-task-toggle"><input type="checkbox" id="tnTaskOn" onchange="document.getElementById('tnTaskFields').style.display=this.checked?'grid':'none'"> 📌 לפתוח משימה למנהל/ת קשרי דיירים מהתיעוד הזה</label>
           <div id="tnTaskFields" style="display:none;grid-template-columns:2fr 1fr;gap:10px;margin-top:10px">
             <input type="text" id="tnTaskTitle" class="task-inp" placeholder="מה צריך לעשות?">
             <input type="date" id="tnTaskDue" class="task-inp" style="direction:ltr;text-align:right" aria-label="עד מתי">
@@ -5555,7 +5555,7 @@ async function deleteTenantCall(i) {
 // collides with a project save). Opened from a tenant call/meeting, from a refuser's
 // "next action", or by hand. Server stamps who/when; e-mails are sent by the server.
 const TASKS_URL = 'https://hjlgkhfrovtpmyeczzze.supabase.co/rest/v1/tasks';
-const TASK_ASSIGNEE = 'lilach', TASK_ASSIGNEE_LABEL = 'לילך';
+const TASK_ASSIGNEE = 'lilach', TASK_ASSIGNEE_LABEL = 'מנהל/ת קשרי דיירים';
 let tasks = [], tasksLoaded = false, tasksFilter = 'open', taskDlgCtx = null;
 const taskHdr = (extra) => ({ apikey: SUPA_KEY, Authorization: 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json', ...(extra || {}) });
 const isoAddDays = (iso, n) => { const d = new Date(iso + 'T12:00:00'); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
@@ -5642,7 +5642,7 @@ function renderTasks() {
   list = list.filter(t => matchesSearch(terms, t.title, t.project_name, t.tenant_name, t.source_summary, t.done_note, t.created_by));
   const openCount = tasks.filter(t => t.status === 'open').length;
   document.getElementById('tasksSummary').textContent =
-    `${openCount} פתוחות · ${tasks.filter(t => t.status === 'open' && t.due_date && t.due_date < getTodayISO()).length} באיחור · אחראית: ${TASK_ASSIGNEE_LABEL}`;
+    `${openCount} פתוחות · ${tasks.filter(t => t.status === 'open' && t.due_date && t.due_date < getTodayISO()).length} באיחור · באחריות: ${TASK_ASSIGNEE_LABEL}`;
   if (!list.length) {
     box.innerHTML = `<div class="task-empty">${tasksFilter === 'open' ? 'אין משימות פתוחות 🎉' : 'אין משימות להצגה'}</div>`;
     return;
@@ -10262,7 +10262,7 @@ async function saveCompaniesEditor() {
 }
 
 // ── App Version Check ─────────────────────────────────────
-const APP_VERSION = 103; // bump on every release
+const APP_VERSION = 104; // bump on every release
 let versionOk = true;
 
 async function checkAppVersion() {
