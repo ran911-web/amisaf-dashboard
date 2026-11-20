@@ -6952,7 +6952,7 @@ function buildProjectRow(p) {
     <td class="c-pct"><div class="pct-cell">
       <span class="pct-num pct-${majorityTier(p)}">${pct}%</span>
       <div class="pct-bar"><div class="pct-bar-fill" style="width:${pct}%;background:${TIER_BAR[majorityTier(p)]}"></div></div>
-    </div>${buildingMajorityChips(p)}${tenantDataConflict(p) ? `<div class="bmaj-row"><span class="bmaj no" title="מספרי הפרויקט שונים מרשימת הדיירים — פתח את לשונית הדיירים">⚠ לא תואם לרשימת הדיירים</span></div>` : ''}</td>
+    </div>${buildingMajorityChips(p)}</td>
     <td class="c-target" data-label="יעד לחתימה" style="font-size:11px;color:var(--text-2);white-space:nowrap;text-align:center">${
       TARGET_NOT_RELEVANT.includes(p.status) ? '<span style="color:var(--gray-4)">—</span>' :
       (p.target && !/^\s*(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{4}-\d{2}-\d{2}|\d{1,2}[\/.\-]\d{4}|Q[1-4]\s*\d{4}|רבעון.*)\s*$/i.test(String(p.target)))
@@ -10262,7 +10262,7 @@ async function saveCompaniesEditor() {
 }
 
 // ── App Version Check ─────────────────────────────────────
-const APP_VERSION = 104; // bump on every release
+const APP_VERSION = 105; // bump on every release
 let versionOk = true;
 
 async function checkAppVersion() {
